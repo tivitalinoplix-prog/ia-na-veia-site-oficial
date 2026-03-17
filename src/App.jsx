@@ -24,12 +24,10 @@ const Logo = ({ className = "", size = 40 }) => {
       <text x="8" y="105" fill="#ffffff" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">NA</text>
       {/* VE - BRANCO */}
       <text x="138" y="105" fill="#ffffff" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">VE</text>
-      {/* i minúsculo - VERMELHO */}
-      <text x="255" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">i</text>
+      {/* iA juntos - VERMELHO */}
+      <text x="255" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">iA</text>
       {/* Ponto quadrado sobre o i */}
       <rect x="265" y="15" width="20" height="20" rx="2" fill="#E8272A" transform="skewX(-9)" />
-      {/* A - VERMELHO */}
-      <text x="310" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">A</text>
     </svg>
   );
 };
@@ -37,6 +35,9 @@ const Logo = ({ className = "", size = 40 }) => {
 const CyberpunkFilters = () => (
   <svg className="hidden">
     <defs>
+      <filter id="sepia">
+        <feColorMatrix type="matrix" values="0.393 0.769 0.189 0 0  0.349 0.686 0.168 0 0  0.272 0.534 0.131 0 0  0 0 0 1 0"/>
+      </filter>
       <filter id="bw-professional">
         <feColorMatrix type="saturate" values="0" />
         <feComponentTransfer>
@@ -302,14 +303,12 @@ function Preloader() {
 
   return (
     <div className="fixed inset-0 z-[100] flex w-full h-full overflow-hidden pointer-events-none">
-      <div className={`absolute inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${isOpen ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`absolute inset-0 flex items-center justify-center z-50 transition-all duration-700 ${isOpen ? 'opacity-0 scale-110' : 'opacity-100 scale-100'}`}>
         <Logo size={120} className="font-logo text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] select-none" />
       </div>
-      <div className={`relative flex-1 border-r border-[#1a1a1a] bg-[#050507] flex items-center justify-end transition-transform duration-[1200ms] ease-[cubic-bezier(0.7,0,0.3,1)] pointer-events-auto ${isOpen ? '-translate-x-full' : 'translate-x-0'}`}>
-        <span className={`text-[clamp(90px,18vw,262px)] font-logo font-black italic tracking-[-0.055em] text-white select-none pr-2 lg:pr-4 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>NA</span>
+      <div className={`relative flex-1 border-r border-[#1a1a1a] bg-[#050507] transition-transform duration-[1200ms] ease-[cubic-bezier(0.7,0,0.3,1)] pointer-events-auto ${isOpen ? '-translate-x-full' : 'translate-x-0'}`}>
       </div>
-      <div className={`relative flex-1 border-l border-[#1a1a1a] bg-[#050507] flex items-center justify-start transition-transform duration-[1200ms] ease-[cubic-bezier(0.7,0,0.3,1)] pointer-events-auto ${isOpen ? 'translate-x-full' : 'translate-x-0'}`}>
-        <span className={`text-[clamp(90px,18vw,262px)] font-logo font-black italic tracking-[-0.055em] text-[#E8272A] select-none pl-2 lg:pl-4 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>VEıA</span>
+      <div className={`relative flex-1 border-l border-[#1a1a1a] bg-[#050507] transition-transform duration-[1200ms] ease-[cubic-bezier(0.7,0,0.3,1)] pointer-events-auto ${isOpen ? 'translate-x-full' : 'translate-x-0'}`}>
       </div>
       <div className={`absolute inset-x-0 bottom-[10%] flex flex-col items-center justify-center z-30 transition-opacity duration-300 ${isOpen ? 'opacity-0' : 'opacity-100'}`}>
         <span className="text-xs tracking-[0.3em] text-[#E8272A] uppercase animate-pulse font-medium">_Initialize_Connection</span>
@@ -439,8 +438,6 @@ function Hero() {
           WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 100%)' 
         }} 
       />
-      {/* Overlay super leve na Hero */}
-      <div className="absolute inset-0 z-0 bg-black/10 pointer-events-none" />
       
       <div className="absolute top-[-10%] right-[-20%] w-[70vw] h-[70vw] glow-red-orbit pointer-events-none z-0" />
       <div className="absolute bottom-[-15%] left-[-15%] w-[60vw] h-[60vw] glow-red-orbit pointer-events-none opacity-70 z-0" />
@@ -488,35 +485,40 @@ function Hero() {
 }
 
 function ProblemSection() {
-  const [selectedStage, setSelectedStage] = useState(null);
+  const [selectedStage, setSelectedStage] = useState(0);
+  const [quoteIndex, setQuoteIndex] = useState(0);
   const sectionRef = useRef(null);
-  const manualRef = useRef(false);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start center", "end center"]
+  });
+
+  const quotes = [
+    "\"Você contratou os melhores profissionais. Mas eles gastam 60% do tempo em tarefas repetitivas que nem deveriam existir. O problema não é talento — é processo.\"",
+    "\"Escalar não é sobre contratar mais pessoas. É sobre extrair o máximo de inteligência da sua operação atual através de fluxos validados.\"",
+    "\"Decisões baseadas em intuição custam caro. Empresas líderes usam dados estruturados e pipelines de IA para garantir precisão cirúrgica.\""
+  ];
 
   useEffect(() => {
-    let interval;
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          let idx = 0;
-          interval = setInterval(() => {
-            if (!manualRef.current) {
-              setSelectedStage(idx);
-              idx = (idx + 1) % 7;
-            }
-          }, 3000);
-        } else {
-          clearInterval(interval);
-        }
-      });
-    }, { threshold: 0.3 });
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => { clearInterval(interval); observer.disconnect(); };
+    const quoteInterval = setInterval(() => {
+      setQuoteIndex(prev => (prev + 1) % quotes.length);
+    }, 4000); // changes every 4 seconds
+    return () => clearInterval(quoteInterval);
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = scrollYProgress.onChange((v) => {
+      // Map scroll progress 0-1 to 0-6 (7 stages)
+      const newStage = Math.min(6, Math.max(0, Math.floor(v * 7)));
+      setSelectedStage(newStage);
+    });
+    return () => unsubscribe();
+  }, [scrollYProgress]);
+
   const handleManualSelect = (index) => {
-    manualRef.current = true;
+    // Optional: smooth scroll to that portion of the section
     setSelectedStage(index);
-    setTimeout(() => { manualRef.current = false; }, 5000);
   };
   const stages = [
     { id: 1, icon: Lightbulb, title: "1. Processos Manuais", desc: "Equipe executa tarefas repetitivas sem automação." },
@@ -564,7 +566,22 @@ function ProblemSection() {
           {/* OVERLAY ESCURO 2 - Transição suave para preto */}
           <div className="relative z-10 flex-1 min-h-[300px] overflow-hidden p-8 lg:p-20 flex flex-col justify-end bg-black/50 backdrop-blur-[2px]">
             <motion.div className="absolute top-8 right-8" animate={{ rotate: [0, 5, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}><Quote className="w-16 h-16 text-white" /></motion.div>
-            <FadeIn delay={0.3} direction="right"><div className="relative z-10 border-l-2 border-[#E8272A] pl-6 py-2"><p className="text-xl lg:text-2xl text-white font-light leading-snug max-w-md">"Você contratou os melhores profissionais. Mas eles gastam 60% do tempo em tarefas repetitivas que nem deveriam existir. O problema não é talento — é processo."</p></div></FadeIn>
+            <FadeIn delay={0.3} direction="right">
+              <div className="relative z-10 border-l-2 border-[#E8272A] pl-6 py-2 overflow-hidden h-[120px] flex items-center">
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={quoteIndex}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.5 }}
+                    className="text-xl lg:text-2xl text-white font-light leading-snug max-w-md absolute"
+                  >
+                    {quotes[quoteIndex]}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
+            </FadeIn>
           </div>
 
         </div>
@@ -588,51 +605,69 @@ function ProblemSection() {
   );
 }
 
-function MethodSection() {
-  return (
-    <section id="method" className="relative z-20 w-full border-t border-white/10 bg-[#050505] py-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-        <FadeIn className="mb-16"><span className="font-medium uppercase mb-4 block text-[#E8272A] tracking-widest text-xs flex items-center gap-2"><motion.div animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="w-2 h-2 rounded-full bg-[#E8272A]" />O Framework</span><h2 className="text-4xl lg:text-6xl font-display font-medium tracking-tighter text-white mb-6 leading-[1.1]">O Método <span className="text-white">NA VEıA</span></h2><p className="text-white text-lg max-w-xl leading-relaxed font-light">3 pilares fundamentais. Precisão técnica absoluta para escalar seu negócio com estruturação automatizada e IA.</p></FadeIn>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-auto">
-          <FadeIn delay={0.1} className="md:col-span-2"><TiltCard><div className="group relative bg-[#E8272A] border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row justify-between hover:border-white/30 transition-colors overflow-hidden min-h-[350px] gap-8 rounded-none h-full"><div className="relative z-10 flex flex-col justify-between h-full"><div><div className="w-14 h-14 flex items-center justify-center bg-white/10 rounded-none text-white mb-8 border border-white/20 backdrop-blur-sm"><Cpu className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Ecossistemas SaaS & Antigravity</h3><p className="text-base lg:text-lg text-white leading-relaxed font-light max-w-md">Desenvolvimento Full-Stack de aplicativos B2B sob medida. Utilizamos o framework de engenharia Antigravity para criar infraestruturas digitais de alta performance, garantindo implantação rápida, segura e escalável.</p></div></div><div className="relative z-10 flex items-center justify-center w-full md:w-auto flex-1 mt-6 md:mt-0 bg-black/20 p-6 rounded-none border border-white/10"><DiagnosticGrid /></div></div></TiltCard></FadeIn>
-          <FadeIn delay={0.2} className="md:col-span-1"><TiltCard><div className="group relative bg-[#111111] border border-white/10 p-8 lg:p-12 flex flex-col justify-between hover:border-[#FF2D30] transition-colors min-h-[350px] rounded-none h-full"><div className="relative z-10 h-full flex flex-col"><div className="w-14 h-14 flex items-center justify-center bg-[#1A1A1A] rounded-none text-[#E8272A] mb-8 border border-white/5"><Brain className="w-6 h-6" /></div><h3 className="text-xl lg:text-2xl font-display font-medium tracking-tight mb-4 text-white">Agentes Autônomos (Google AI Workspace)</h3><p className="text-sm lg:text-base text-white leading-relaxed font-light mb-8">Automação de back-office com Agentic AI. Dominamos o workspace laboratorial do Google (Vertex AI/AI Studio) para orquestrar agentes autônomos que operam 24/7 na gestão de contratos, SMS e relatórios offshore.</p><div className="mt-auto w-full border border-white/5 bg-[#050505] p-5 rounded-none font-tech text-xs leading-relaxed tracking-wider overflow-hidden relative"><div className="flex gap-2 mb-4 opacity-50 border-b border-white/5 pb-3"><div className="w-3 h-3 rounded-none bg-[#E8272A]"></div><div className="w-3 h-3 rounded-none bg-white/20"></div><div className="w-3 h-3 rounded-none bg-white/20"></div></div><div className="space-y-2"><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.2, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Initializing Google_AI_Workspace...</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.6, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Connecting Perplexity_API...</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 1.0, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Antigravity Framework:</span> <span className="text-[#E8272A] font-bold">ACTIVE</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 1.4, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">System Status:</span> <span className="text-[#E8272A] font-bold">Zero_Hallucinations</span><span className="inline-block w-2 h-4 ml-1 align-middle bg-[#E8272A] animate-pulse"></span></motion.p></div></div></div></div></TiltCard></FadeIn>
-          <FadeIn delay={0.3} className="md:col-span-3"><TiltCard><div className="group relative bg-[#0A0A0A] border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between hover:border-[#FF2D30] transition-colors min-h-[300px] rounded-none h-full"><div className="relative z-10 max-w-2xl mb-8 md:mb-0"><div className="w-14 h-14 flex items-center justify-center bg-[#111111] rounded-none text-[#E8272A] mb-8 border border-white/5"><Shield className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Auditoria & Deep Research (Perplexity)</h3><p className="text-base lg:text-lg text-white leading-relaxed font-light">Mitigação de riscos e Zero Alucinações. Aliamos a precisão da Neurociência ao motor de raciocínio do Perplexity para realizar fact-checking extremo, Red Teaming e validação de dados críticos da sua operação.</p></div><div className="relative z-10 w-full md:w-auto flex items-center justify-center gap-8 hidden md:flex shrink-0"><motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="w-32 h-32 rounded-full border border-[#E8272A]/30 flex items-center justify-center bg-[#E8272A]/10 relative"><div className="absolute inset-0 rounded-full border border-[#E8272A]/20 animate-ping opacity-20"></div><Target className="w-12 h-12 text-[#E8272A]" /></motion.div><div className="flex flex-col gap-4"><div className="w-24 h-2 bg-white opacity-30 rounded-full"></div><div className="w-48 h-2 bg-white opacity-30 rounded-full"></div><div className="w-32 h-2 bg-[#E8272A] rounded-full shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div></div></div></div></TiltCard></FadeIn>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function MentorSection() {
+function MethodAndMentorSection() {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
   const bgY = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
+  const [photoFilter, setPhotoFilter] = useState('url(#duotone-red)');
+
   return (
-    <section ref={sectionRef} id="mentor" className="relative z-20 bg-[#050505] text-white w-full border-t border-b border-white/10 overflow-hidden">
-      <CyberpunkFilters />
-      <motion.div style={{ y: bgY }} className="absolute inset-0 z-0 opacity-20 mix-blend-luminosity pointer-events-none"><img src="https://i.postimg.cc/fTr2CQYp/hero_bg.jpg" alt="Reveal" className="w-full h-[150%] object-cover brightness-[1.2] contrast-[1.2]" /><div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]"></div></motion.div>
-      <div className="grid grid-cols-1 lg:grid-cols-4 w-full relative z-10">
-        <div className="col-span-1 lg:col-span-4 p-6 lg:p-16 border-b border-white/10 flex flex-col items-start gap-6">
-          <FadeIn><div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111111]/80 backdrop-blur-md border border-white/10"><motion.div animate={{ rotate: [0, 15, -15, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}><Sparkles className="w-4 h-4 text-[#E8272A]" /></motion.div><span className="text-xs font-medium tracking-wide text-[#FFFFFF] uppercase">O Especialista</span></div></FadeIn>
-          <FadeIn delay={0.1}><h2 className="text-6xl lg:text-[8rem] font-medium font-display tracking-tighter text-[#FFFFFF] leading-[0.85] flex items-center gap-4">VITALINO<span className="inline-block w-[0.18em] h-[0.16em] bg-[#E8272A] rounded-[0.04em] -skew-x-[9deg] animate-pulse shrink-0" style={{ verticalAlign: 'middle' }} /></h2></FadeIn>
-          <FadeIn delay={0.2}><p className="text-[#E4E4E7] text-lg lg:text-2xl max-w-2xl font-light leading-relaxed mt-4">Especialista em Avaliação de Inteligência Artificial e Engenharia de Prompt.</p></FadeIn>
+    <div ref={sectionRef} className="relative w-full border-t border-b border-white/10 overflow-hidden bg-[#050505]">
+      {/* Shared Parallax Background */}
+      <motion.div style={{ y: bgY }} className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+        <img src="https://i.postimg.cc/fTr2CQYp/hero_bg.jpg" alt="Reveal" className="w-full h-[150%] object-cover grayscale opacity-50" />
+      </motion.div>
+      <div className="absolute inset-0 z-0 bg-black/50 pointer-events-none" /> {/* 50% Shadow overlay */}
+      
+      {/* METHOD SECTION */}
+      <section id="method" className="relative z-10 w-full py-24 pb-12 overflow-hidden bg-white/[0.02] backdrop-blur-[2px]">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+          <FadeIn className="mb-16"><span className="font-medium uppercase mb-4 block text-[#E8272A] tracking-widest text-xs flex items-center gap-2"><motion.div animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="w-2 h-2 rounded-full bg-[#E8272A]" />O Framework</span><h2 className="text-4xl lg:text-6xl font-display font-medium tracking-tighter text-white mb-6 leading-[1.1]">O Método <span className="text-white">NA VEıA</span></h2><p className="text-white text-lg max-w-xl leading-relaxed font-light">3 pilares fundamentais. Precisão técnica absoluta para escalar seu negócio com estruturação automatizada e IA.</p></FadeIn>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-auto">
+            <FadeIn delay={0.1} className="md:col-span-2"><TiltCard><div className="group relative bg-[#E8272A]/90 backdrop-blur-md border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row justify-between hover:border-white/30 transition-colors overflow-hidden min-h-[350px] gap-8 rounded-none h-full"><div className="relative z-10 flex flex-col justify-between h-full"><div><div className="w-14 h-14 flex items-center justify-center bg-white/10 rounded-none text-white mb-8 border border-white/20 backdrop-blur-sm"><Cpu className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Ecossistemas SaaS & Antigravity</h3><p className="text-base lg:text-lg text-white leading-relaxed font-light max-w-md">Desenvolvimento Full-Stack de aplicativos B2B sob medida. Utilizamos o framework de engenharia Antigravity para criar infraestruturas digitais de alta performance, garantindo implantação rápida, segura e escalável.</p></div></div><div className="relative z-10 flex items-center justify-center w-full md:w-auto flex-1 mt-6 md:mt-0 bg-black/30 backdrop-blur-sm p-6 rounded-none border border-white/10"><DiagnosticGrid /></div></div></TiltCard></FadeIn>
+            <FadeIn delay={0.2} className="md:col-span-1"><TiltCard><div className="group relative bg-[#111111]/80 backdrop-blur-md border border-white/10 p-8 lg:p-12 flex flex-col justify-between hover:border-[#FF2D30] transition-colors min-h-[350px] rounded-none h-full"><div className="relative z-10 h-full flex flex-col"><div className="w-14 h-14 flex items-center justify-center bg-[#1A1A1A] rounded-none text-[#E8272A] mb-8 border border-white/5"><Brain className="w-6 h-6" /></div><h3 className="text-xl lg:text-2xl font-display font-medium tracking-tight mb-4 text-white">Agentes Autônomos (Google AI Workspace)</h3><p className="text-sm lg:text-base text-white/80 leading-relaxed font-light mb-8">Automação de back-office com Agentic AI. Dominamos o workspace laboratorial do Google (Vertex AI/AI Studio) para orquestrar agentes autônomos que operam 24/7 na gestão de contratos, SMS e relatórios offshore.</p><div className="mt-auto w-full border border-white/5 bg-[#050505]/80 p-5 rounded-none font-tech text-xs leading-relaxed tracking-wider overflow-hidden relative"><div className="flex gap-2 mb-4 opacity-50 border-b border-white/5 pb-3"><div className="w-3 h-3 rounded-none bg-[#E8272A]"></div><div className="w-3 h-3 rounded-none bg-white/20"></div><div className="w-3 h-3 rounded-none bg-white/20"></div></div><div className="space-y-2"><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.2, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Initializing Google_AI_Workspace...</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.6, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Connecting Perplexity_API...</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 1.0, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Antigravity Framework:</span> <span className="text-[#E8272A] font-bold">ACTIVE</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 1.4, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">System Status:</span> <span className="text-[#E8272A] font-bold">Zero_Hallucinations</span><span className="inline-block w-2 h-4 ml-1 align-middle bg-[#E8272A] animate-pulse"></span></motion.p></div></div></div></div></TiltCard></FadeIn>
+            <FadeIn delay={0.3} className="md:col-span-3"><TiltCard><div className="group relative bg-[#0A0A0A]/80 backdrop-blur-md border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between hover:border-[#FF2D30] transition-colors min-h-[300px] rounded-none h-full"><div className="relative z-10 max-w-2xl mb-8 md:mb-0"><div className="w-14 h-14 flex items-center justify-center bg-[#111111] rounded-none text-[#E8272A] mb-8 border border-white/5"><Shield className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Auditoria & Deep Research (Perplexity)</h3><p className="text-base lg:text-lg text-white/80 leading-relaxed font-light">Mitigação de riscos e Zero Alucinações. Aliamos a precisão da Neurociência ao motor de raciocínio do Perplexity para realizar fact-checking extremo, Red Teaming e validação de dados críticos da sua operação.</p></div><div className="relative z-10 w-full md:w-auto flex items-center justify-center gap-8 hidden md:flex shrink-0"><motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="w-32 h-32 rounded-full border border-[#E8272A]/30 flex items-center justify-center bg-[#E8272A]/10 relative"><div className="absolute inset-0 rounded-full border border-[#E8272A]/20 animate-ping opacity-20"></div><Target className="w-12 h-12 text-[#E8272A]" /></motion.div><div className="flex flex-col gap-4"><div className="w-24 h-2 bg-white opacity-30 rounded-full"></div><div className="w-48 h-2 bg-white opacity-30 rounded-full"></div><div className="w-32 h-2 bg-[#E8272A] rounded-full shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div></div></div></div></TiltCard></FadeIn>
+          </div>
         </div>
-        <div className="col-span-1 lg:col-span-1 flex flex-col min-h-[600px] bg-[#111111]/80 backdrop-blur-sm border-b lg:border-b-0 lg:border-r border-white/10 p-6 lg:p-8 justify-between relative">
-          <FadeIn delay={0.3} direction="up" className="flex flex-col gap-8 h-full relative z-10">
-            <TiltCard><div className="aspect-[4/5] overflow-hidden group bg-black w-full rounded-2xl border border-white/20 shadow-[0_0_40px_rgba(0,0,0,0.6)] relative" style={{ transformStyle: "preserve-3d" }}><div className="absolute inset-0 w-full h-full overflow-hidden transition-[filter] duration-700" style={{ filter: 'url(#duotone-red)' }}><div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_40%,transparent_30%,rgba(0,0,0,0.5)_70%,rgba(5,5,5,1)_100%)] mix-blend-overlay opacity-80" /><motion.img src="https://i.postimg.cc/SNvTdbcP/mentor.jpg" alt="Vitalino" className="w-full h-full object-cover brightness-[1.1] contrast-[1.15] transition-all duration-700 group-hover:scale-110 group-hover:brightness-[1.2]" /></div><div className="absolute inset-0 z-30 shadow-[inset_0_0_120px_rgba(5,5,5,0.8)]" /><div className="absolute bottom-4 left-4 right-4 z-40 flex items-center justify-between" style={{ transform: "translateZ(40px)" }}><div className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-[0_0_15px_rgba(0,0,0,0.5)]"><div className="w-1.5 h-1.5 rounded-full bg-[#E8272A] shadow-[0_0_8px_rgba(220,38,38,0.8)]"></div><span className="text-[10px] font-medium uppercase tracking-wider text-[#FFFFFF]">Auth_Key Verified</span></div></div></div></TiltCard>
-            <div><h3 className="text-2xl font-medium tracking-tight mb-2 text-[#FFFFFF]">Quem sou eu</h3><p className="text-sm text-[#E4E4E7] leading-relaxed font-light">Especialista em Engenharia de Conhecimento.</p></div>
-            <div className="flex items-center gap-3">{[Instagram, Linkedin].map((I, k) => <MagneticButton key={k} href="https://wa.me/5522998586180" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-[#FF2D30] transition-all"><I className="w-4 h-4" /></MagneticButton>)}</div>
-          </FadeIn>
-          <FadeIn delay={0.4} className="relative z-10"><MagneticButton href="https://wa.me/5522998586180" target="_blank" rel="noreferrer" className="group mt-12 w-full py-4 px-6 bg-white text-black rounded-full font-semibold text-sm tracking-wide flex items-center justify-between hover:bg-white/90 transition-all uppercase shadow-[0_0_20px_rgba(255,255,255,0.1)]">Falar comigo<motion.div animate={{ x: [0, 5, 0], y: [0, -5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1" /></motion.div></MagneticButton></FadeIn>
+      </section>
+
+      {/* MENTOR SECTION */}
+      <section id="mentor" className="relative z-10 text-white w-full overflow-hidden bg-white/[0.01]">
+        <CyberpunkFilters />
+        <div className="grid grid-cols-1 lg:grid-cols-4 w-full relative z-10">
+          <div className="col-span-1 lg:col-span-4 p-6 lg:p-16 border-t border-b border-white/10 flex flex-col items-start gap-6 pt-16">
+            <FadeIn><div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111111]/80 backdrop-blur-md border border-white/10"><motion.div animate={{ rotate: [0, 15, -15, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}><Sparkles className="w-4 h-4 text-[#E8272A]" /></motion.div><span className="text-xs font-medium tracking-wide text-[#FFFFFF] uppercase">O Especialista</span></div></FadeIn>
+            <FadeIn delay={0.1}><h2 className="text-6xl lg:text-[8rem] font-medium font-display tracking-tighter text-[#FFFFFF] leading-[0.85] flex items-center gap-4">VITALINO<span className="inline-block w-[0.18em] h-[0.16em] bg-[#E8272A] rounded-[0.04em] -skew-x-[9deg] animate-pulse shrink-0" style={{ verticalAlign: 'middle' }} /></h2></FadeIn>
+            <FadeIn delay={0.2}><p className="text-[#E4E4E7] text-lg lg:text-2xl max-w-2xl font-light leading-relaxed mt-4">Especialista em Avaliação de Inteligência Artificial e Engenharia de Prompt.</p></FadeIn>
+          </div>
+          <div className="col-span-1 lg:col-span-1 flex flex-col min-h-[600px] bg-[#111111]/50 backdrop-blur-md border-b lg:border-b-0 lg:border-r border-white/10 p-6 lg:p-8 justify-between relative">
+            <FadeIn delay={0.3} direction="up" className="flex flex-col gap-8 h-full relative z-10">
+              <TiltCard>
+                <div onClick={() => setPhotoFilter('url(#sepia)')} className="aspect-[4/5] overflow-hidden group bg-black w-full rounded-2xl border border-white/20 shadow-[0_0_40px_rgba(0,0,0,0.6)] relative cursor-pointer" style={{ transformStyle: "preserve-3d" }}>
+                  <div className="absolute inset-0 w-full h-full overflow-hidden transition-[filter] duration-700" style={{ filter: photoFilter }}>
+                    <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_40%,transparent_30%,rgba(0,0,0,0.3)_70%,rgba(5,5,5,0.8)_100%)] mix-blend-overlay opacity-50" />
+                    <motion.img src="https://i.postimg.cc/SNvTdbcP/mentor.jpg" alt="Vitalino" className="w-full h-full object-cover brightness-[1.2] contrast-[1.1] transition-all duration-700 group-hover:scale-110" />
+                  </div>
+                  <div className="absolute inset-0 z-30 shadow-[inset_0_0_80px_rgba(5,5,5,0.5)] pointer-events-none" />
+                  <div className="absolute bottom-4 left-4 right-4 z-40 flex items-center justify-between pointer-events-none" style={{ transform: "translateZ(40px)" }}>
+                    <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-[0_0_15px_rgba(0,0,0,0.5)]"><div className="w-1.5 h-1.5 rounded-full bg-[#E8272A] shadow-[0_0_8px_rgba(220,38,38,0.8)]"></div><span className="text-[10px] font-medium uppercase tracking-wider text-[#FFFFFF]">Auth_Key Verified</span></div>
+                  </div>
+                </div>
+              </TiltCard>
+              <div><h3 className="text-2xl font-medium tracking-tight mb-2 text-[#FFFFFF]">Quem sou eu</h3><p className="text-sm text-[#E4E4E7] leading-relaxed font-light">Especialista em Engenharia de Conhecimento.</p></div>
+              <div className="flex items-center gap-3">{[Instagram, Linkedin].map((I, k) => <MagneticButton key={k} href="https://wa.me/5522998586180" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-[#FF2D30] transition-all"><I className="w-4 h-4" /></MagneticButton>)}</div>
+            </FadeIn>
+            <FadeIn delay={0.4} className="relative z-10"><MagneticButton href="https://wa.me/5522998586180" target="_blank" rel="noreferrer" className="group mt-12 w-full py-4 px-6 bg-white text-black rounded-full font-semibold text-sm tracking-wide flex items-center justify-between hover:bg-white/90 transition-all uppercase shadow-[0_0_20px_rgba(255,255,255,0.1)]">Falar comigo<motion.div animate={{ x: [0, 5, 0], y: [0, -5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1" /></motion.div></MagneticButton></FadeIn>
+          </div>
+          <div className="col-span-1 lg:col-span-3 flex flex-col h-full bg-[#050505]/60 backdrop-blur-md border-t lg:border-t-0 border-white/5">
+            <div className="p-8 lg:p-20 border-b border-white/10 min-h-[300px] flex flex-col justify-center"><p className="text-xl lg:text-3xl font-light leading-snug text-[#FFFFFF] max-w-3xl">"Minha especialidade é capturar a inteligência do seu negócio e transformá-la em fluxos automatizados. Combinando Neurociência com o desenvolvimento de fluxos recursivos e alinhamento de LLMs, garanto que a IA atue a seu favor com precisão cirúrgica."</p><div className="flex flex-wrap gap-3 mt-12">{['Neurociências', 'IA Generativa', 'Engenharia de Prompt', 'LLM Alignment', 'RLHF', 'MBA IA', 'Psicologia Cognitiva'].map(tag => (<span key={tag} className="px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-xs font-medium uppercase tracking-wider text-[#FFFFFF] hover:text-[#FFFFFF] hover:bg-[#E8272A]/20 hover:border-[#E8272A]/50 transition-colors cursor-default shadow-[0_0_10px_rgba(232,39,42,0)] hover:shadow-[0_0_15px_rgba(232,39,42,0.2)]"># {tag}</span>))}</div></div>
+            <div className="flex-1 bg-[#111111]/30 flex flex-col">{[{ icon: Dna, title: "Base Científica Aplicada" }, { icon: Lightbulb, title: "Ciência da Inovação" }, { icon: ShieldCheck, title: "Gestão de IA Aplicada" }, { icon: Brain, title: "Processos Cognitivos" }].map((item, i) => (
+              <div key={i} className="group flex-1 flex flex-col lg:flex-row items-start lg:items-center justify-between p-6 lg:px-12 border-b border-white/10 hover:bg-[#E8272A]/5 hover:border-l-2 hover:border-l-[#E8272A] transition-all cursor-default gap-4"><div className="flex items-center gap-8 w-full lg:w-auto"><div className="flex items-center gap-3 w-32"><item.icon className="w-5 h-5 text-[#E4E4E7] group-hover:text-[#E8272A] transition-colors" /><span className="text-sm font-medium text-[#E4E4E7] group-hover:text-[#FFFFFF]">Pilar</span></div><h4 className="text-xl font-medium tracking-tight text-[#FFFFFF]">{item.title}</h4></div></div>
+            ))}</div>
+          </div>
         </div>
-        <div className="col-span-1 lg:col-span-3 flex flex-col h-full bg-[#050505]/80 backdrop-blur-sm">
-          <div className="p-8 lg:p-20 border-b border-white/10 min-h-[300px] flex flex-col justify-center"><p className="text-xl lg:text-3xl font-light leading-snug text-[#E4E4E7] max-w-3xl">"Minha especialidade é capturar a inteligência do seu negócio e transformá-la em fluxos automatizados. Combinando Neurociência com o desenvolvimento de fluxos recursivos e alinhamento de LLMs, garanto que a IA atue a seu favor com precisão cirúrgica."</p><div className="flex flex-wrap gap-3 mt-12">{['Neurociências', 'IA Generativa', 'Engenharia de Prompt', 'LLM Alignment', 'RLHF', 'MBA IA', 'Psicologia Cognitiva'].map(tag => (<span key={tag} className="px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-xs font-medium uppercase tracking-wider text-[#FFFFFF] hover:text-[#FFFFFF] hover:bg-[#E8272A]/20 hover:border-[#E8272A]/50 transition-colors cursor-default shadow-[0_0_10px_rgba(232,39,42,0)] hover:shadow-[0_0_15px_rgba(232,39,42,0.2)]"># {tag}</span>))}</div></div>
-          <div className="flex-1 bg-[#111111]/50 flex flex-col">{[{ icon: Dna, title: "Base Científica Aplicada" }, { icon: Lightbulb, title: "Ciência da Inovação" }, { icon: ShieldCheck, title: "Gestão de IA Aplicada" }, { icon: Brain, title: "Processos Cognitivos" }].map((item, i) => (
-            <div key={i} className="group flex-1 flex flex-col lg:flex-row items-start lg:items-center justify-between p-6 lg:px-12 border-b border-white/10 hover:bg-[#E8272A]/5 hover:border-l-2 hover:border-l-[#E8272A] transition-all cursor-default gap-4"><div className="flex items-center gap-8 w-full lg:w-auto"><div className="flex items-center gap-3 w-32"><item.icon className="w-5 h-5 text-[#E4E4E7] group-hover:text-[#E8272A] transition-colors" /><span className="text-sm font-medium text-[#E4E4E7] group-hover:text-[#FFFFFF]">Pilar</span></div><h4 className="text-xl font-medium tracking-tight text-[#FFFFFF]">{item.title}</h4></div></div>
-          ))}</div>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }
 
@@ -695,39 +730,57 @@ function CTASection() {
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
+    // Normalize coordinates from -1 to 1 instead of pixel values for smoother mapping
     setMousePos({
-      x: ((e.clientX - rect.left) / rect.width - 0.5) * 40,
-      y: ((e.clientY - rect.top) / rect.height - 0.5) * 40
+      x: (e.clientX - rect.left) / rect.width * 2 - 1,
+      y: (e.clientY - rect.top) / rect.height * 2 - 1
     });
   };
 
   return (
-    <section id="cta" className="relative overflow-hidden border-t border-b border-white/10 bg-[#E8272A]" onMouseMove={handleMouseMove}>
-      {/* Typography Composition Background — mouse-reactive layers */}
-      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
-        <span className="absolute top-[5%] left-[5%] text-[8rem] md:text-[14rem] font-display font-bold tracking-tighter text-white/[0.06] leading-none transition-transform duration-700 ease-out" style={{ transform: `translate(${mousePos.x * 0.15}px, ${mousePos.y * 0.15}px)` }}>automação</span>
-        <span className="absolute top-[20%] right-[2%] text-[6rem] md:text-[10rem] font-display font-bold tracking-tighter text-black/[0.08] leading-none transition-transform duration-700 ease-out" style={{ transform: `translate(${mousePos.x * -0.25}px, ${mousePos.y * 0.2}px)` }}>precisão</span>
-        <span className="absolute bottom-[30%] left-[10%] text-[5rem] md:text-[9rem] font-display font-bold tracking-tighter text-white/[0.05] leading-none transition-transform duration-700 ease-out" style={{ transform: `translate(${mousePos.x * 0.3}px, ${mousePos.y * -0.15}px)` }}>escala</span>
-        <span className="absolute bottom-[8%] right-[5%] text-[7rem] md:text-[12rem] font-display font-bold tracking-tighter text-black/[0.07] leading-none transition-transform duration-700 ease-out" style={{ transform: `translate(${mousePos.x * -0.2}px, ${mousePos.y * 0.25}px)` }}>zero</span>
-        <span className="absolute top-[50%] left-[40%] text-[4rem] md:text-[7rem] font-display font-bold tracking-tighter text-white/[0.04] leading-none -rotate-6 transition-transform duration-700 ease-out" style={{ transform: `translate(${mousePos.x * 0.4}px, ${mousePos.y * -0.3}px) rotate(-6deg)` }}>alucinações</span>
+    <section id="cta" className="relative w-full overflow-hidden border-t border-b border-white/10 bg-[#E8272A] min-h-[80vh] flex items-center justify-center" onMouseMove={handleMouseMove} style={{ perspective: "1000px" }}>
+      {/* 3D Typography Composition Background */}
+      <div className="absolute inset-0 z-0 select-none overflow-hidden flex items-center justify-center" aria-hidden="true" style={{ transformStyle: "preserve-3d" }}>
+        {/* Layer 1: Deepest back */}
+        <motion.div animate={{ x: mousePos.x * -100, y: mousePos.y * -100 }} transition={{ type: "spring", stiffness: 50, damping: 30 }} className="absolute whitespace-nowrap opacity-[0.03] text-[15rem] md:text-[25rem] font-display font-black tracking-tighter text-black mix-blend-overlay" style={{ transform: "translateZ(-500px) rotate(-5deg)" }}>
+          AUTOMAÇÃO ESCALA PRECISÃO
+        </motion.div>
+        {/* Layer 2: Mid-ground text */}
+        <motion.div animate={{ x: mousePos.x * 50, y: mousePos.y * 50 }} transition={{ type: "spring", stiffness: 70, damping: 25 }} className="absolute whitespace-nowrap opacity-[0.05] text-[10rem] md:text-[18rem] font-display font-black tracking-tighter text-white mix-blend-overlay" style={{ transform: "translateZ(-200px) rotate(3deg)" }}>
+          ZERO ALUCINAÇÕES
+        </motion.div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 relative z-10 w-full flex flex-col items-center text-center">
+      <div className="max-w-7xl mx-auto px-6 relative z-10 w-full flex flex-col items-center text-center">
         <FadeIn>
-          <div style={{ transform: `translate(${mousePos.x * 0.08}px, ${mousePos.y * 0.08}px)` }} className="transition-transform duration-500 ease-out">
-            <h2 className="text-4xl md:text-7xl font-medium font-display tracking-tighter leading-[1.05] text-white mb-2">Eleve o pulso</h2>
-          </div>
-          <div style={{ transform: `translate(${mousePos.x * 0.2}px, ${mousePos.y * 0.2}px)` }} className="transition-transform duration-300 ease-out">
-            <h2 className="text-4xl md:text-7xl font-medium font-display tracking-tighter leading-[1.05] text-black mb-6">tecnológico.</h2>
-          </div>
+          <motion.div animate={{ x: mousePos.x * 20, y: mousePos.y * 20, rotateX: mousePos.y * -10, rotateY: mousePos.x * 10 }} transition={{ type: "spring", stiffness: 100, damping: 20 }} style={{ transformStyle: "preserve-3d" }}>
+            <h2 className="text-6xl md:text-[8rem] font-medium font-display tracking-tighter leading-[0.9] text-white drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]" style={{ transform: "translateZ(100px)" }}>
+              Eleve o Pulso
+            </h2>
+            <h2 className="text-6xl md:text-[8rem] font-medium font-display tracking-tighter leading-[0.9] text-black drop-shadow-[0_10px_30px_rgba(255,255,255,0.1)]" style={{ transform: "translateZ(60px)" }}>
+              Tecnológico.
+            </h2>
+          </motion.div>
         </FadeIn>
-        <FadeIn delay={0.1}><p className="text-white/90 text-lg md:text-xl font-light max-w-xl mx-auto mb-12">Pronto para trazer automação estruturada e segurança absoluta para a sua operação?</p></FadeIn>
-        <FadeIn delay={0.2} className="flex flex-col items-center justify-center">
-          <MagneticButton href="https://wa.me/5522998586180" target="_blank" rel="noreferrer" className="inline-flex items-center gap-4 bg-white text-black px-8 lg:px-10 py-4 lg:py-5 rounded-none hover:bg-black hover:text-white transition-all duration-300 font-semibold tracking-wide uppercase group border border-white/20">
-            <span className="tracking-widest text-xs lg:text-sm">FALAR COMIGO</span>
-            <motion.div animate={{ x: [0, 5, 0], y: [0, -5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowUpRight className="w-4 h-4 lg:w-5 lg:h-5" /></motion.div>
+        
+        <FadeIn delay={0.2}>
+          <p className="text-white/90 text-xl md:text-2xl font-light max-w-2xl mx-auto mt-12 mb-16 leading-relaxed drop-shadow-md">
+            Pronto para transformar sua operação com automação estruturada e precisão neuro-simulada?
+          </p>
+        </FadeIn>
+
+        <FadeIn delay={0.3} className="flex flex-col items-center justify-center">
+          <MagneticButton href="https://wa.me/5522998586180" target="_blank" rel="noreferrer" className="relative group overflow-hidden bg-black text-white px-12 py-6 rounded-full font-semibold tracking-widest text-sm uppercase shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 transition-all hover:scale-105 hover:shadow-[0_0_80px_rgba(0,0,0,0.8)]">
+            <span className="relative z-10 flex items-center gap-4">
+              FALAR COMIGO
+              <motion.div animate={{ x: [0, 5, 0], y: [0, -5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowUpRight className="w-5 h-5" /></motion.div>
+            </span>
+            <div className="absolute inset-0 bg-white scale-x-0 origin-left group-hover:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(0.7,0,0.3,1)] z-0" />
+            <span className="absolute inset-0 z-10 flex items-center justify-center gap-4 text-black opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 tracking-widest text-sm uppercase font-semibold">
+              FALAR COMIGO <ArrowUpRight className="w-5 h-5" />
+            </span>
           </MagneticButton>
-          <div className="flex items-center gap-2 mt-6 text-white/70 text-xs tracking-widest uppercase font-medium"><Lock className="w-4 h-4" /><span>Direct · WhatsApp Channel</span></div>
+          <div className="flex items-center gap-2 mt-8 text-black/60 font-medium text-xs tracking-widest uppercase bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-black/5"><Lock className="w-3 h-3" /><span>Canal Seguro · Direto via WhatsApp</span></div>
         </FadeIn>
       </div>
     </section>
@@ -735,28 +788,29 @@ function CTASection() {
 }
 
 function Footer() {
+  const currentYear = new Date().getFullYear();
   return (
-    <footer className="px-6 border-t border-white/5 bg-[#050505]">
-      {/* EKG Pulsating Line */}
-      <div className="relative w-full h-12 flex items-center justify-center mt-8">
-        <svg viewBox="0 0 800 40" className="w-full max-w-3xl h-full" preserveAspectRatio="none">
-          <path d="M0,20 L200,20 L210,10 L220,30 L230,15 L240,25 L250,20 L450,20 L460,10 L470,30 L480,20 L800,20" stroke="#E8272A" strokeWidth="2" fill="none" opacity="0.3" />
-          <circle cx="470" cy="20" r="4" fill="#E8272A">
-            <animate attributeName="r" values="4;7;4" dur="1.2s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" />
-          </circle>
-        </svg>
+    <footer className="relative bg-[#050505] text-white py-12 border-t border-white/5 overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#E8272A]/50 to-transparent"></div>
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-2">
+            <span className="font-logo font-black italic tracking-tighter text-xl text-white">NA</span>
+            <span className="font-logo font-black italic tracking-tighter text-xl text-white">VE</span>
+            <span className="font-logo font-black italic tracking-tighter text-xl text-[#E8272A] relative">iA<div className="absolute top-[0.1em] right-[0.45em] w-[0.2em] h-[0.2em] bg-[#E8272A] rounded-[0.05em] -skew-x-[9deg]"></div></span>
+          </div>
+          <p className="text-[#E4E4E7] text-sm font-light">© {currentYear} Vitalino. Todos os direitos reservados.</p>
+          <div className="flex items-center gap-4">
+            <a href="https://wa.me/5522998586180" className="text-[#E4E4E7] hover:text-[#E8272A] transition-colors text-sm font-light">Termos</a>
+            <a href="https://wa.me/5522998586180" className="text-[#E4E4E7] hover:text-[#E8272A] transition-colors text-sm font-light">Privacidade</a>
+          </div>
+        </div>
       </div>
-      <div className="container mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left py-12">
-        <div className="flex items-center gap-4">
-          <Logo size={32} />
-          <span className="text-lg font-medium text-white tracking-tight">NA VEiA</span>
-        </div>
-        <p className="text-sm text-gray-500">© 2025 NA VEiA. Engenharia de Conhecimento com IA Aplicada.</p>
-        <div className="flex gap-6">
-          <a href="#" className="text-gray-400 hover:text-white transition-colors"><Instagram className="w-5 h-5" /></a>
-          <a href="#" className="text-gray-400 hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></a>
-        </div>
+      {/* EKG Pulsating Line Backdrop */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-20 flex items-center justify-center overflow-hidden">
+        <svg viewBox="0 0 1000 100" className="w-[200%] h-full opacity-30 stroke-[#E8272A]" preserveAspectRatio="none">
+          <path d="M0 50 H300 L320 10 L340 90 L360 50 H600 L620 20 L640 80 L660 50 H1000" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-[dash_3s_linear_infinite]" strokeDasharray="1000" strokeDashoffset="1000" />
+        </svg>
       </div>
     </footer>
   );
@@ -805,8 +859,7 @@ export default function App() {
       `}} />
       <div className="min-h-screen font-sans selection:bg-[#E8272A]/30 lg:cursor-none relative">
         <BackgroundGrid /><CustomCursor /><Preloader />
-        <motion.div className="fixed top-0 left-0 right-0 h-1 bg-[#E8272A] origin-left z-50" style={{ scaleX }} />
-        <Navbar /><Hero /><ProblemSection /><MethodSection /><MentorSection /><DiagnosticSection /><TestimonialsSection /><CTASection /><Footer />
+        <Navbar /><Hero /><ProblemSection /><MethodAndMentorSection /><DiagnosticSection /><TestimonialsSection /><CTASection /><Footer />
       </div>
     </>
   );
