@@ -20,16 +20,16 @@ const Logo = ({ className = "", size = 40 }) => {
       role="img"
       aria-label="NA VEıA"
     >
-      {/* NA - branco */}
+      {/* NA - BRANCO */}
       <text x="8" y="105" fill="#ffffff" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">NA</text>
-      {/* VE - vermelho */}
-      <text x="138" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">VE</text>
-      {/* dotless i - vermelho */}
-      <text x="255" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">ı</text>
-      {/* A - vermelho */}
+      {/* VE - BRANCO */}
+      <text x="138" y="105" fill="#ffffff" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">VE</text>
+      {/* i minúsculo - VERMELHO */}
+      <text x="255" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">i</text>
+      {/* Ponto quadrado sobre o i */}
+      <rect x="265" y="15" width="20" height="20" rx="2" fill="#E8272A" transform="skewX(-9)" />
+      {/* A - VERMELHO */}
       <text x="310" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">A</text>
-      {/* Ponto achatado do i */}
-      <rect x="265" y="19" width="23" height="21" rx="2.5" fill="#E8272A" transform="skewX(-9)" />
     </svg>
   );
 };
@@ -43,6 +43,19 @@ const CyberpunkFilters = () => (
           <feFuncR type="gamma" exponent="1.1" />
           <feFuncG type="gamma" exponent="1.1" />
           <feFuncB type="gamma" exponent="1.1" />
+        </feComponentTransfer>
+      </filter>
+      <filter id="duotone-red">
+        <feColorMatrix type="saturate" values="0" />
+        <feComponentTransfer>
+          <feFuncR type="linear" slope="1.15" intercept="0.05" />
+          <feFuncG type="linear" slope="0.15" intercept="0" />
+          <feFuncB type="linear" slope="0.1" intercept="0" />
+        </feComponentTransfer>
+        <feComponentTransfer>
+          <feFuncR type="gamma" exponent="0.9" />
+          <feFuncG type="gamma" exponent="1.2" />
+          <feFuncB type="gamma" exponent="1.3" />
         </feComponentTransfer>
       </filter>
       <filter id="glitch-distort">
@@ -441,7 +454,7 @@ function Hero() {
           <div className="flex flex-col space-y-6 lg:space-y-8 max-w-2xl">
             <div className="w-16 h-px bg-[#E8272A]/50" />
             <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-medium tracking-tighter leading-[1.05] text-white drop-shadow-xl">
-              FUSÃO<br />NEURO + IA<span className="text-[#E8272A]">/</span>
+              FUSÃO<br />NEURO + IA
             </h1>
             <div className="space-y-4">
               <p className="text-lg md:text-xl font-light text-gray-300 drop-shadow-md">
@@ -476,6 +489,35 @@ function Hero() {
 
 function ProblemSection() {
   const [selectedStage, setSelectedStage] = useState(null);
+  const sectionRef = useRef(null);
+  const manualRef = useRef(false);
+
+  useEffect(() => {
+    let interval;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          let idx = 0;
+          interval = setInterval(() => {
+            if (!manualRef.current) {
+              setSelectedStage(idx);
+              idx = (idx + 1) % 7;
+            }
+          }, 3000);
+        } else {
+          clearInterval(interval);
+        }
+      });
+    }, { threshold: 0.3 });
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => { clearInterval(interval); observer.disconnect(); };
+  }, []);
+
+  const handleManualSelect = (index) => {
+    manualRef.current = true;
+    setSelectedStage(index);
+    setTimeout(() => { manualRef.current = false; }, 5000);
+  };
   const stages = [
     { id: 1, icon: Lightbulb, title: "1. Processos Manuais", desc: "Equipe executa tarefas repetitivas sem automação." },
     { id: 2, icon: FileText, title: "2. Documentação Desestruturada", desc: "Relatórios, propostas e documentos sem padrão." },
@@ -496,7 +538,7 @@ function ProblemSection() {
   ];
 
   return (
-    <section id="problem" style={{ backgroundColor: '#050505' }} className="relative z-20 w-full border-t border-white/10">
+    <section ref={sectionRef} id="problem" style={{ backgroundColor: '#050505' }} className="relative z-20 w-full border-t border-white/10">
       <div className="grid grid-cols-1 lg:grid-cols-2 w-full">
         
         {/* COLUNA ESQUERDA - PARALLAX CONTÍNUO */}
@@ -512,17 +554,17 @@ function ProblemSection() {
             }} 
           />
 
-          {/* OVERLAY ESCURO 1 - Mais escuro que a Hero */}
-          <div className="relative z-10 p-8 lg:p-20 border-b border-white/10 bg-black/70 backdrop-blur-[2px]">
+          {/* OVERLAY ESCURO 1 - Reduzido para deixar imagem mais visível */}
+          <div className="relative z-10 p-8 lg:p-20 border-b border-white/10 bg-black/30 backdrop-blur-[1px]">
             <FadeIn><div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111111]/80 border border-white/10 mb-8"><motion.div animate={{ rotate: [0, 15, -15, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}><Bug className="w-4 h-4 text-[#E8272A]" /></motion.div><span className="text-xs font-medium tracking-wide text-white uppercase">Diagnóstico Operacional</span></div></FadeIn>
             <FadeIn delay={0.1}><h2 className="text-4xl lg:text-6xl font-display font-medium tracking-tighter text-white leading-[1.1] max-w-lg mb-6">Sua operação está <span className="text-[#E8272A]">drenando seu crescimento?</span></h2></FadeIn>
             <FadeIn delay={0.2}><p className="text-base lg:text-lg text-white font-light max-w-md leading-relaxed">Sua empresa investe tempo e dinheiro em operações repetitivas. Documentos são redigidos manualmente, processos geram gargalos e a equipe gasta horas em tarefas que poderiam ser automatizadas com IA.</p></FadeIn>
           </div>
 
-          {/* OVERLAY ESCURO 2 - Quase preto total antes da próxima secção */}
-          <div className="relative z-10 flex-1 min-h-[300px] overflow-hidden p-8 lg:p-20 flex flex-col justify-end bg-black/85 backdrop-blur-[4px]">
+          {/* OVERLAY ESCURO 2 - Transição suave para preto */}
+          <div className="relative z-10 flex-1 min-h-[300px] overflow-hidden p-8 lg:p-20 flex flex-col justify-end bg-black/50 backdrop-blur-[2px]">
             <motion.div className="absolute top-8 right-8" animate={{ rotate: [0, 5, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}><Quote className="w-16 h-16 text-white" /></motion.div>
-            <FadeIn delay={0.3} direction="right"><div className="relative z-10 border-l-2 border-[#E8272A] pl-6 py-2"><p className="text-xl lg:text-2xl text-white font-light leading-snug max-w-md">"O problema não é a sua equipe. O problema é que seus processos não foram desenhados para escalar com inteligência."</p></div></FadeIn>
+            <FadeIn delay={0.3} direction="right"><div className="relative z-10 border-l-2 border-[#E8272A] pl-6 py-2"><p className="text-xl lg:text-2xl text-white font-light leading-snug max-w-md">"Você contratou os melhores profissionais. Mas eles gastam 60% do tempo em tarefas repetitivas que nem deveriam existir. O problema não é talento — é processo."</p></div></FadeIn>
           </div>
 
         </div>
@@ -537,7 +579,7 @@ function ProblemSection() {
           </div>
           <div className="flex flex-col flex-1">
             {stages.map((s, index) => (
-              <FadeIn key={s.id} delay={index * 0.1} direction="left"><motion.div onClick={() => setSelectedStage(index)} whileHover={{ x: 10 }} className={`group relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 lg:px-12 border-b border-white/10 transition-all cursor-pointer gap-4 ${selectedStage === index ? 'bg-black/20 border-l-2 border-[#E8272A]' : 'hover:bg-black/10 border-l-2 border-transparent'}`}><div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" /><div className="flex items-center gap-6 w-full sm:w-auto relative z-10"><div className={`w-12 h-12 flex items-center justify-center rounded-full border transition-colors ${selectedStage === index ? 'bg-white border-white' : 'bg-transparent border-white/20'}`}><s.icon className={`w-5 h-5 ${selectedStage === index ? 'text-[#E8272A]' : 'text-white'}`} /></div><div><h4 className="text-xl font-medium tracking-tight text-white">{s.title}</h4><p className="text-sm text-white mt-1 max-w-[280px] font-light">{s.desc}</p></div></div><div className="flex items-center justify-between w-full sm:w-auto sm:flex-1 sm:justify-end gap-6 relative z-10">{s.isTerminal && <span className="text-[10px] font-medium text-white tracking-widest uppercase px-3 py-1.5 border border-white/20 bg-white/10 rounded-full">CRÍTICO</span>}<div className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all ${selectedStage === index ? 'bg-white text-[#E8272A]' : 'border-white/20 text-white hover:bg-white/20'}`}><ArrowUpRight className="w-5 h-5" /></div></div></motion.div></FadeIn>
+              <FadeIn key={s.id} delay={index * 0.1} direction="left"><motion.div onClick={() => handleManualSelect(index)} whileHover={{ x: 10 }} className={`group relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 lg:px-12 border-b border-white/10 transition-all cursor-pointer gap-4 ${selectedStage === index ? 'bg-black/20 border-l-2 border-[#E8272A]' : 'hover:bg-black/10 border-l-2 border-transparent'}`}><div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" /><div className="flex items-center gap-6 w-full sm:w-auto relative z-10"><div className={`w-12 h-12 flex items-center justify-center rounded-full border transition-colors ${selectedStage === index ? 'bg-white border-white' : 'bg-transparent border-white/20'}`}><s.icon className={`w-5 h-5 ${selectedStage === index ? 'text-[#E8272A]' : 'text-white'}`} /></div><div><h4 className="text-xl font-medium tracking-tight text-white">{s.title}</h4><p className="text-sm text-white mt-1 max-w-[280px] font-light">{s.desc}</p></div></div><div className="flex items-center justify-between w-full sm:w-auto sm:flex-1 sm:justify-end gap-6 relative z-10">{s.isTerminal && <span className="text-[10px] font-medium text-white tracking-widest uppercase px-3 py-1.5 border border-white/20 bg-white/10 rounded-full">CRÍTICO</span>}<div className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all ${selectedStage === index ? 'bg-white text-[#E8272A]' : 'border-white/20 text-white hover:bg-white/20'}`}><ArrowUpRight className="w-5 h-5" /></div></div></motion.div></FadeIn>
             ))}
           </div>
         </div>
@@ -577,7 +619,7 @@ function MentorSection() {
         </div>
         <div className="col-span-1 lg:col-span-1 flex flex-col min-h-[600px] bg-[#111111]/80 backdrop-blur-sm border-b lg:border-b-0 lg:border-r border-white/10 p-6 lg:p-8 justify-between relative">
           <FadeIn delay={0.3} direction="up" className="flex flex-col gap-8 h-full relative z-10">
-            <TiltCard><div className="aspect-[4/5] overflow-hidden group bg-black w-full rounded-2xl border border-white/20 shadow-[0_0_40px_rgba(0,0,0,0.6)] relative" style={{ transformStyle: "preserve-3d" }}><div className="absolute inset-0 w-full h-full overflow-hidden" style={{ filter: 'url(#bw-professional)' }}><div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_40%,transparent_30%,rgba(0,0,0,0.5)_70%,rgba(5,5,5,1)_100%)] mix-blend-overlay opacity-80" /><motion.img src="https://i.postimg.cc/SNvTdbcP/mentor.jpg" alt="Vitalino" className="w-full h-full object-cover brightness-[1.1] contrast-[1.3] transition-all duration-700 group-hover:scale-110 group-hover:brightness-[1.2]" /></div><div className="absolute inset-0 z-30 shadow-[inset_0_0_120px_rgba(5,5,5,0.8)]" /><div className="absolute bottom-4 left-4 right-4 z-40 flex items-center justify-between" style={{ transform: "translateZ(40px)" }}><div className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-[0_0_15px_rgba(0,0,0,0.5)]"><div className="w-1.5 h-1.5 rounded-full bg-[#E8272A] shadow-[0_0_8px_rgba(220,38,38,0.8)]"></div><span className="text-[10px] font-medium uppercase tracking-wider text-[#FFFFFF]">Auth_Key Verified</span></div></div></div></TiltCard>
+            <TiltCard><div className="aspect-[4/5] overflow-hidden group bg-black w-full rounded-2xl border border-white/20 shadow-[0_0_40px_rgba(0,0,0,0.6)] relative" style={{ transformStyle: "preserve-3d" }}><div className="absolute inset-0 w-full h-full overflow-hidden transition-[filter] duration-700" style={{ filter: 'url(#duotone-red)' }}><div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_40%,transparent_30%,rgba(0,0,0,0.5)_70%,rgba(5,5,5,1)_100%)] mix-blend-overlay opacity-80" /><motion.img src="https://i.postimg.cc/SNvTdbcP/mentor.jpg" alt="Vitalino" className="w-full h-full object-cover brightness-[1.1] contrast-[1.15] transition-all duration-700 group-hover:scale-110 group-hover:brightness-[1.2]" /></div><div className="absolute inset-0 z-30 shadow-[inset_0_0_120px_rgba(5,5,5,0.8)]" /><div className="absolute bottom-4 left-4 right-4 z-40 flex items-center justify-between" style={{ transform: "translateZ(40px)" }}><div className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-[0_0_15px_rgba(0,0,0,0.5)]"><div className="w-1.5 h-1.5 rounded-full bg-[#E8272A] shadow-[0_0_8px_rgba(220,38,38,0.8)]"></div><span className="text-[10px] font-medium uppercase tracking-wider text-[#FFFFFF]">Auth_Key Verified</span></div></div></div></TiltCard>
             <div><h3 className="text-2xl font-medium tracking-tight mb-2 text-[#FFFFFF]">Quem sou eu</h3><p className="text-sm text-[#E4E4E7] leading-relaxed font-light">Especialista em Engenharia de Conhecimento.</p></div>
             <div className="flex items-center gap-3">{[Instagram, Linkedin].map((I, k) => <MagneticButton key={k} href="https://wa.me/5522998586180" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-[#FF2D30] transition-all"><I className="w-4 h-4" /></MagneticButton>)}</div>
           </FadeIn>
@@ -649,19 +691,36 @@ function TestimonialsSection() {
 }
 
 function CTASection() {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: ((e.clientX - rect.left) / rect.width - 0.5) * 40,
+      y: ((e.clientY - rect.top) / rect.height - 0.5) * 40
+    });
+  };
+
   return (
-    <section id="cta" className="relative overflow-hidden border-t border-b border-white/10 bg-[#E8272A]">
-      {/* Typography Composition Background */}
+    <section id="cta" className="relative overflow-hidden border-t border-b border-white/10 bg-[#E8272A]" onMouseMove={handleMouseMove}>
+      {/* Typography Composition Background — mouse-reactive layers */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
-        <span className="absolute top-[5%] left-[5%] text-[8rem] md:text-[14rem] font-display font-bold tracking-tighter text-white/[0.06] leading-none">automação</span>
-        <span className="absolute top-[20%] right-[2%] text-[6rem] md:text-[10rem] font-display font-bold tracking-tighter text-black/[0.08] leading-none">precisão</span>
-        <span className="absolute bottom-[30%] left-[10%] text-[5rem] md:text-[9rem] font-display font-bold tracking-tighter text-white/[0.05] leading-none">escala</span>
-        <span className="absolute bottom-[8%] right-[5%] text-[7rem] md:text-[12rem] font-display font-bold tracking-tighter text-black/[0.07] leading-none">zero</span>
-        <span className="absolute top-[50%] left-[40%] text-[4rem] md:text-[7rem] font-display font-bold tracking-tighter text-white/[0.04] leading-none -rotate-6">alucinações</span>
+        <span className="absolute top-[5%] left-[5%] text-[8rem] md:text-[14rem] font-display font-bold tracking-tighter text-white/[0.06] leading-none transition-transform duration-700 ease-out" style={{ transform: `translate(${mousePos.x * 0.15}px, ${mousePos.y * 0.15}px)` }}>automação</span>
+        <span className="absolute top-[20%] right-[2%] text-[6rem] md:text-[10rem] font-display font-bold tracking-tighter text-black/[0.08] leading-none transition-transform duration-700 ease-out" style={{ transform: `translate(${mousePos.x * -0.25}px, ${mousePos.y * 0.2}px)` }}>precisão</span>
+        <span className="absolute bottom-[30%] left-[10%] text-[5rem] md:text-[9rem] font-display font-bold tracking-tighter text-white/[0.05] leading-none transition-transform duration-700 ease-out" style={{ transform: `translate(${mousePos.x * 0.3}px, ${mousePos.y * -0.15}px)` }}>escala</span>
+        <span className="absolute bottom-[8%] right-[5%] text-[7rem] md:text-[12rem] font-display font-bold tracking-tighter text-black/[0.07] leading-none transition-transform duration-700 ease-out" style={{ transform: `translate(${mousePos.x * -0.2}px, ${mousePos.y * 0.25}px)` }}>zero</span>
+        <span className="absolute top-[50%] left-[40%] text-[4rem] md:text-[7rem] font-display font-bold tracking-tighter text-white/[0.04] leading-none -rotate-6 transition-transform duration-700 ease-out" style={{ transform: `translate(${mousePos.x * 0.4}px, ${mousePos.y * -0.3}px) rotate(-6deg)` }}>alucinações</span>
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 relative z-10 w-full flex flex-col items-center text-center">
-        <FadeIn><h2 className="text-4xl md:text-7xl font-medium font-display tracking-tighter leading-[1.05] text-white mb-6">Eleve o pulso<br/><span className="text-black">tecnológico.</span></h2></FadeIn>
+        <FadeIn>
+          <div style={{ transform: `translate(${mousePos.x * 0.08}px, ${mousePos.y * 0.08}px)` }} className="transition-transform duration-500 ease-out">
+            <h2 className="text-4xl md:text-7xl font-medium font-display tracking-tighter leading-[1.05] text-white mb-2">Eleve o pulso</h2>
+          </div>
+          <div style={{ transform: `translate(${mousePos.x * 0.2}px, ${mousePos.y * 0.2}px)` }} className="transition-transform duration-300 ease-out">
+            <h2 className="text-4xl md:text-7xl font-medium font-display tracking-tighter leading-[1.05] text-black mb-6">tecnológico.</h2>
+          </div>
+        </FadeIn>
         <FadeIn delay={0.1}><p className="text-white/90 text-lg md:text-xl font-light max-w-xl mx-auto mb-12">Pronto para trazer automação estruturada e segurança absoluta para a sua operação?</p></FadeIn>
         <FadeIn delay={0.2} className="flex flex-col items-center justify-center">
           <MagneticButton href="https://wa.me/5522998586180" target="_blank" rel="noreferrer" className="inline-flex items-center gap-4 bg-white text-black px-8 lg:px-10 py-4 lg:py-5 rounded-none hover:bg-black hover:text-white transition-all duration-300 font-semibold tracking-wide uppercase group border border-white/20">
@@ -677,11 +736,21 @@ function CTASection() {
 
 function Footer() {
   return (
-    <footer className="py-16 px-6 border-t border-white/5 bg-[#050505]">
-      <div className="container mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
+    <footer className="px-6 border-t border-white/5 bg-[#050505]">
+      {/* EKG Pulsating Line */}
+      <div className="relative w-full h-12 flex items-center justify-center mt-8">
+        <svg viewBox="0 0 800 40" className="w-full max-w-3xl h-full" preserveAspectRatio="none">
+          <path d="M0,20 L200,20 L210,10 L220,30 L230,15 L240,25 L250,20 L450,20 L460,10 L470,30 L480,20 L800,20" stroke="#E8272A" strokeWidth="2" fill="none" opacity="0.3" />
+          <circle cx="470" cy="20" r="4" fill="#E8272A">
+            <animate attributeName="r" values="4;7;4" dur="1.2s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" />
+          </circle>
+        </svg>
+      </div>
+      <div className="container mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left py-12">
         <div className="flex items-center gap-4">
           <Logo size={32} />
-          <span className="text-lg font-medium text-white tracking-tight">NA VEıA</span>
+          <span className="text-lg font-medium text-white tracking-tight">NA VEiA</span>
         </div>
         <p className="text-sm text-gray-500">© 2025 NA VEiA. Engenharia de Conhecimento com IA Aplicada.</p>
         <div className="flex gap-6">
