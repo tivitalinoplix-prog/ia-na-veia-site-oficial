@@ -6,29 +6,17 @@ import {
   ArrowUpRight, Dna, Lightbulb, ShieldCheck, Brain, MessageSquare, 
   Cpu, Lock, Star, Activity, Check
 } from 'lucide-react';
+import logoImg from './assets/Logo.png';
 
 const Logo = ({ className = "", size = 40 }) => {
   const w = size * (460 / 130);
   return (
-    <svg 
-      viewBox="0 0 460 130" 
+    <img 
+      src={logoImg} 
+      alt="NA VEiA" 
       className={className} 
-      xmlns="http://www.w3.org/2000/svg"
-      width={w}
-      height={size}
-      style={{ display: 'inline-block', verticalAlign: 'middle' }}
-      role="img"
-      aria-label="NA VEıA"
-    >
-      {/* NA - BRANCO */}
-      <text x="8" y="105" fill="#ffffff" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">NA</text>
-      {/* VE - BRANCO */}
-      <text x="138" y="105" fill="#ffffff" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">VE</text>
-      {/* iA juntos - VERMELHO */}
-      <text x="255" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">iA</text>
-      {/* Ponto quadrado sobre o i */}
-      <rect x="265" y="15" width="20" height="20" rx="2" fill="#E8272A" transform="skewX(-9)" />
-    </svg>
+      style={{ display: 'inline-block', verticalAlign: 'middle', height: size, width: w, objectFit: 'contain' }} 
+    />
   );
 };
 
@@ -40,24 +28,9 @@ const CyberpunkFilters = () => (
       </filter>
       <filter id="bw-professional">
         <feColorMatrix type="saturate" values="0" />
-        <feComponentTransfer>
-          <feFuncR type="gamma" exponent="1.1" />
-          <feFuncG type="gamma" exponent="1.1" />
-          <feFuncB type="gamma" exponent="1.1" />
-        </feComponentTransfer>
       </filter>
       <filter id="duotone-red">
-        <feColorMatrix type="saturate" values="0" />
-        <feComponentTransfer>
-          <feFuncR type="linear" slope="1.15" intercept="0.05" />
-          <feFuncG type="linear" slope="0.15" intercept="0" />
-          <feFuncB type="linear" slope="0.1" intercept="0" />
-        </feComponentTransfer>
-        <feComponentTransfer>
-          <feFuncR type="gamma" exponent="0.9" />
-          <feFuncG type="gamma" exponent="1.2" />
-          <feFuncB type="gamma" exponent="1.3" />
-        </feComponentTransfer>
+        <feColorMatrix type="matrix" values="0.8 0 0 0 0.2  0 0.3 0 0 0.1  0 0 0.3 0 0.1  0 0 0 1 0" />
       </filter>
       <filter id="glitch-distort">
         <feTurbulence baseFrequency="0.01 0.2" numOctaves="2" type="fractalNoise" result="glitch-noise" />
@@ -433,9 +406,7 @@ function Hero() {
       <div 
         className="absolute inset-0 z-0 bg-no-repeat bg-[75%_5%] md:bg-center bg-fixed bg-[length:768px_512px] md:bg-[length:1536px_1024px]" 
         style={{ 
-          backgroundImage: `url('https://i.postimg.cc/fTr2CQYp/hero_bg.jpg')`, 
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 100%)', 
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 100%)' 
+          backgroundImage: `url('https://i.postimg.cc/fTr2CQYp/hero_bg.jpg')`
         }} 
       />
       
@@ -509,9 +480,11 @@ function ProblemSection() {
 
   useEffect(() => {
     const unsubscribe = scrollYProgress.onChange((v) => {
-      // Map scroll progress 0-1 to 0-6 (7 stages)
-      const newStage = Math.min(6, Math.max(0, Math.floor(v * 7)));
-      setSelectedStage(newStage);
+      if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+        // Map scroll progress 0-1 to 0-6 (7 stages)
+        const newStage = Math.min(6, Math.max(0, Math.floor(v * 7)));
+        setSelectedStage(newStage);
+      }
     });
     return () => unsubscribe();
   }, [scrollYProgress]);
@@ -596,7 +569,33 @@ function ProblemSection() {
           </div>
           <div className="flex flex-col flex-1">
             {stages.map((s, index) => (
-              <FadeIn key={s.id} delay={index * 0.1} direction="left"><motion.div onClick={() => handleManualSelect(index)} whileHover={{ x: 10 }} className={`group relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 lg:px-12 border-b border-white/10 transition-all cursor-pointer gap-4 ${selectedStage === index ? 'bg-black/20 border-l-2 border-[#E8272A]' : 'hover:bg-black/10 border-l-2 border-transparent'}`}><div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" /><div className="flex items-center gap-6 w-full sm:w-auto relative z-10"><div className={`w-12 h-12 flex items-center justify-center rounded-full border transition-colors ${selectedStage === index ? 'bg-white border-white' : 'bg-transparent border-white/20'}`}><s.icon className={`w-5 h-5 ${selectedStage === index ? 'text-[#E8272A]' : 'text-white'}`} /></div><div><h4 className="text-xl font-medium tracking-tight text-white">{s.title}</h4><p className="text-sm text-white mt-1 max-w-[280px] font-light">{s.desc}</p></div></div><div className="flex items-center justify-between w-full sm:w-auto sm:flex-1 sm:justify-end gap-6 relative z-10">{s.isTerminal && <span className="text-[10px] font-medium text-white tracking-widest uppercase px-3 py-1.5 border border-white/20 bg-white/10 rounded-full">CRÍTICO</span>}<div className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all ${selectedStage === index ? 'bg-white text-[#E8272A]' : 'border-white/20 text-white hover:bg-white/20'}`}><ArrowUpRight className="w-5 h-5" /></div></div></motion.div></FadeIn>
+              <motion.div 
+                key={s.id} 
+                initial={{ opacity: 0, x: -30 }} 
+                whileInView={{ opacity: 1, x: 0 }} 
+                viewport={{ margin: "-20%", once: false }}
+                onViewportEnter={() => { if(typeof window !== 'undefined' && window.innerWidth < 1024) setSelectedStage(index) }}
+                onClick={() => handleManualSelect(index)} 
+                whileHover={{ x: 10 }} 
+                className={`group relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 lg:px-12 border-b border-white/10 transition-all cursor-pointer gap-4 ${selectedStage === index ? 'bg-black/20 border-l-2 border-[#E8272A]' : 'hover:bg-black/10 border-l-2 border-transparent'}`}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                <div className="flex items-center gap-6 w-full sm:w-auto relative z-10">
+                  <div className={`w-12 h-12 flex items-center justify-center rounded-full border transition-colors ${selectedStage === index ? 'bg-white border-white' : 'bg-transparent border-white/20'}`}>
+                    <s.icon className={`w-5 h-5 ${selectedStage === index ? 'text-[#E8272A]' : 'text-white'}`} />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-medium tracking-tight text-white">{s.title}</h4>
+                    <p className="text-sm text-white mt-1 max-w-[280px] font-light">{s.desc}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between w-full sm:w-auto sm:flex-1 sm:justify-end gap-6 relative z-10">
+                  {s.isTerminal && <span className="text-[10px] font-medium text-white tracking-widest uppercase px-3 py-1.5 border border-white/20 bg-white/10 rounded-full">CRÍTICO</span>}
+                  <div className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all ${selectedStage === index ? 'bg-white text-[#E8272A]' : 'border-white/20 text-white hover:bg-white/20'}`}>
+                    <ArrowUpRight className="w-5 h-5" />
+                  </div>
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -624,9 +623,9 @@ function MethodAndMentorSection() {
         <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
           <FadeIn className="mb-16"><span className="font-medium uppercase mb-4 block text-[#E8272A] tracking-widest text-xs flex items-center gap-2"><motion.div animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="w-2 h-2 rounded-full bg-[#E8272A]" />O Framework</span><h2 className="text-4xl lg:text-6xl font-display font-medium tracking-tighter text-white mb-6 leading-[1.1]">O Método <span className="text-white">NA VEıA</span></h2><p className="text-white text-lg max-w-xl leading-relaxed font-light">3 pilares fundamentais. Precisão técnica absoluta para escalar seu negócio com estruturação automatizada e IA.</p></FadeIn>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-auto">
-            <FadeIn delay={0.1} className="md:col-span-2"><TiltCard><div className="group relative bg-[#E8272A]/90 backdrop-blur-md border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row justify-between hover:border-white/30 transition-colors overflow-hidden min-h-[350px] gap-8 rounded-none h-full"><div className="relative z-10 flex flex-col justify-between h-full"><div><div className="w-14 h-14 flex items-center justify-center bg-white/10 rounded-none text-white mb-8 border border-white/20 backdrop-blur-sm"><Cpu className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Ecossistemas SaaS & Antigravity</h3><p className="text-base lg:text-lg text-white leading-relaxed font-light max-w-md">Desenvolvimento Full-Stack de aplicativos B2B sob medida. Utilizamos o framework de engenharia Antigravity para criar infraestruturas digitais de alta performance, garantindo implantação rápida, segura e escalável.</p></div></div><div className="relative z-10 flex items-center justify-center w-full md:w-auto flex-1 mt-6 md:mt-0 bg-black/30 backdrop-blur-sm p-6 rounded-none border border-white/10"><DiagnosticGrid /></div></div></TiltCard></FadeIn>
-            <FadeIn delay={0.2} className="md:col-span-1"><TiltCard><div className="group relative bg-[#111111]/80 backdrop-blur-md border border-white/10 p-8 lg:p-12 flex flex-col justify-between hover:border-[#FF2D30] transition-colors min-h-[350px] rounded-none h-full"><div className="relative z-10 h-full flex flex-col"><div className="w-14 h-14 flex items-center justify-center bg-[#1A1A1A] rounded-none text-[#E8272A] mb-8 border border-white/5"><Brain className="w-6 h-6" /></div><h3 className="text-xl lg:text-2xl font-display font-medium tracking-tight mb-4 text-white">Agentes Autônomos (Google AI Workspace)</h3><p className="text-sm lg:text-base text-white/80 leading-relaxed font-light mb-8">Automação de back-office com Agentic AI. Dominamos o workspace laboratorial do Google (Vertex AI/AI Studio) para orquestrar agentes autônomos que operam 24/7 na gestão de contratos, SMS e relatórios offshore.</p><div className="mt-auto w-full border border-white/5 bg-[#050505]/80 p-5 rounded-none font-tech text-xs leading-relaxed tracking-wider overflow-hidden relative"><div className="flex gap-2 mb-4 opacity-50 border-b border-white/5 pb-3"><div className="w-3 h-3 rounded-none bg-[#E8272A]"></div><div className="w-3 h-3 rounded-none bg-white/20"></div><div className="w-3 h-3 rounded-none bg-white/20"></div></div><div className="space-y-2"><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.2, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Initializing Google_AI_Workspace...</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.6, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Connecting Perplexity_API...</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 1.0, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Antigravity Framework:</span> <span className="text-[#E8272A] font-bold">ACTIVE</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 1.4, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">System Status:</span> <span className="text-[#E8272A] font-bold">Zero_Hallucinations</span><span className="inline-block w-2 h-4 ml-1 align-middle bg-[#E8272A] animate-pulse"></span></motion.p></div></div></div></div></TiltCard></FadeIn>
-            <FadeIn delay={0.3} className="md:col-span-3"><TiltCard><div className="group relative bg-[#0A0A0A]/80 backdrop-blur-md border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between hover:border-[#FF2D30] transition-colors min-h-[300px] rounded-none h-full"><div className="relative z-10 max-w-2xl mb-8 md:mb-0"><div className="w-14 h-14 flex items-center justify-center bg-[#111111] rounded-none text-[#E8272A] mb-8 border border-white/5"><Shield className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Auditoria & Deep Research (Perplexity)</h3><p className="text-base lg:text-lg text-white/80 leading-relaxed font-light">Mitigação de riscos e Zero Alucinações. Aliamos a precisão da Neurociência ao motor de raciocínio do Perplexity para realizar fact-checking extremo, Red Teaming e validação de dados críticos da sua operação.</p></div><div className="relative z-10 w-full md:w-auto flex items-center justify-center gap-8 hidden md:flex shrink-0"><motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="w-32 h-32 rounded-full border border-[#E8272A]/30 flex items-center justify-center bg-[#E8272A]/10 relative"><div className="absolute inset-0 rounded-full border border-[#E8272A]/20 animate-ping opacity-20"></div><Target className="w-12 h-12 text-[#E8272A]" /></motion.div><div className="flex flex-col gap-4"><div className="w-24 h-2 bg-white opacity-30 rounded-full"></div><div className="w-48 h-2 bg-white opacity-30 rounded-full"></div><div className="w-32 h-2 bg-[#E8272A] rounded-full shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div></div></div></div></TiltCard></FadeIn>
+            <FadeIn delay={0.1} direction="left" className="md:col-span-2"><TiltCard><div className="group relative bg-[#E8272A]/90 backdrop-blur-md border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row justify-between hover:border-white/30 transition-colors overflow-hidden min-h-[350px] gap-8 rounded-none h-full"><div className="relative z-10 flex flex-col justify-between h-full"><div><div className="w-14 h-14 flex items-center justify-center bg-white/10 rounded-none text-white mb-8 border border-white/20 backdrop-blur-sm"><Cpu className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Ecossistemas SaaS & Antigravity</h3><p className="text-base lg:text-lg text-white leading-relaxed font-light max-w-md">Desenvolvimento Full-Stack de aplicativos B2B sob medida. Utilizamos o framework de engenharia Antigravity para criar infraestruturas digitais de alta performance, garantindo implantação rápida, segura e escalável.</p></div></div><div className="relative z-10 flex items-center justify-center w-full md:w-auto flex-1 mt-6 md:mt-0 bg-black/30 backdrop-blur-sm p-6 rounded-none border border-white/10"><DiagnosticGrid /></div></div></TiltCard></FadeIn>
+            <FadeIn delay={0.15} direction="right" className="md:col-span-1"><TiltCard><div className="group relative bg-[#111111]/80 backdrop-blur-md border border-white/10 p-8 lg:p-12 flex flex-col justify-between hover:border-[#FF2D30] transition-colors min-h-[350px] rounded-none h-full"><div className="relative z-10 h-full flex flex-col"><div className="w-14 h-14 flex items-center justify-center bg-[#1A1A1A] rounded-none text-[#E8272A] mb-8 border border-white/5"><Brain className="w-6 h-6" /></div><h3 className="text-xl lg:text-2xl font-display font-medium tracking-tight mb-4 text-white">Agentes Autônomos (Google AI Workspace)</h3><p className="text-sm lg:text-base text-white/80 leading-relaxed font-light mb-8">Automação de back-office com Agentic AI. Dominamos o workspace laboratorial do Google (Vertex AI/AI Studio) para orquestrar agentes autônomos que operam 24/7 na gestão de contratos, SMS e relatórios offshore.</p><div className="mt-auto w-full border border-white/5 bg-[#050505]/80 p-5 rounded-none font-tech text-xs leading-relaxed tracking-wider overflow-hidden relative"><div className="flex gap-2 mb-4 opacity-50 border-b border-white/5 pb-3"><div className="w-3 h-3 rounded-none bg-[#E8272A]"></div><div className="w-3 h-3 rounded-none bg-white/20"></div><div className="w-3 h-3 rounded-none bg-white/20"></div></div><div className="space-y-2"><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.2, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Initializing Google_AI_Workspace...</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.6, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Connecting Perplexity_API...</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 1.0, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Antigravity Framework:</span> <span className="text-[#E8272A] font-bold">ACTIVE</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 1.4, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">System Status:</span> <span className="text-[#E8272A] font-bold">Zero_Hallucinations</span><span className="inline-block w-2 h-4 ml-1 align-middle bg-[#E8272A] animate-pulse"></span></motion.p></div></div></div></div></TiltCard></FadeIn>
+            <FadeIn delay={0.2} direction="left" className="md:col-span-3"><TiltCard><div className="group relative bg-[#0A0A0A]/80 backdrop-blur-md border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between hover:border-[#FF2D30] transition-colors min-h-[300px] rounded-none h-full"><div className="relative z-10 max-w-2xl mb-8 md:mb-0"><div className="w-14 h-14 flex items-center justify-center bg-[#111111] rounded-none text-[#E8272A] mb-8 border border-white/5"><Shield className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Auditoria & Deep Research (Perplexity)</h3><p className="text-base lg:text-lg text-white/80 leading-relaxed font-light">Mitigação de riscos e Zero Alucinações. Aliamos a precisão da Neurociência ao motor de raciocínio do Perplexity para realizar fact-checking extremo, Red Teaming e validação de dados críticos da sua operação.</p></div><div className="relative z-10 w-full md:w-auto flex items-center justify-center gap-8 hidden md:flex shrink-0"><motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="w-32 h-32 rounded-full border border-[#E8272A]/30 flex items-center justify-center bg-[#E8272A]/10 relative"><div className="absolute inset-0 rounded-full border border-[#E8272A]/20 animate-ping opacity-20"></div><Target className="w-12 h-12 text-[#E8272A]" /></motion.div><div className="flex flex-col gap-4"><div className="w-24 h-2 bg-white opacity-30 rounded-full"></div><div className="w-48 h-2 bg-white opacity-30 rounded-full"></div><div className="w-32 h-2 bg-[#E8272A] rounded-full shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div></div></div></div></TiltCard></FadeIn>
           </div>
         </div>
       </section>
@@ -795,9 +794,7 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
-            <span className="font-logo font-black italic tracking-tighter text-xl text-white">NA</span>
-            <span className="font-logo font-black italic tracking-tighter text-xl text-white">VE</span>
-            <span className="font-logo font-black italic tracking-tighter text-xl text-[#E8272A] relative">iA<div className="absolute top-[0.1em] right-[0.45em] w-[0.2em] h-[0.2em] bg-[#E8272A] rounded-[0.05em] -skew-x-[9deg]"></div></span>
+            <Logo size={32} />
           </div>
           <p className="text-[#E4E4E7] text-sm font-light">© {currentYear} Vitalino. Todos os direitos reservados.</p>
           <div className="flex items-center gap-4">
@@ -807,8 +804,8 @@ function Footer() {
         </div>
       </div>
       {/* EKG Pulsating Line Backdrop */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-20 flex items-center justify-center overflow-hidden">
-        <svg viewBox="0 0 1000 100" className="w-[200%] h-full opacity-30 stroke-[#E8272A]" preserveAspectRatio="none">
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-40 flex items-center justify-center overflow-hidden">
+        <svg viewBox="0 0 1000 100" className="w-[200%] h-full opacity-80 stroke-[#E8272A]" preserveAspectRatio="none">
           <path d="M0 50 H300 L320 10 L340 90 L360 50 H600 L620 20 L640 80 L660 50 H1000" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-[dash_3s_linear_infinite]" strokeDasharray="1000" strokeDashoffset="1000" />
         </svg>
       </div>
