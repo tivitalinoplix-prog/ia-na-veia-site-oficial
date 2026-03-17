@@ -650,13 +650,26 @@ function TestimonialsSection() {
 
 function CTASection() {
   return (
-    <section id="cta" className="py-24 md:py-32 relative overflow-hidden border-t border-b border-white/10 flex items-center justify-center text-center bg-[#0a0000]">
-      <WebGLVortexAnel />
-      <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#ff2a2a]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="max-w-4xl mx-auto px-6 relative z-10 w-full">
-        <FadeIn><h2 className="text-4xl md:text-7xl font-medium font-display tracking-tighter leading-[1.1] text-white mb-8">Eleve o pulso<br/><span className="text-white">tecnológico.</span></h2></FadeIn>
-        <FadeIn delay={0.1}><p className="text-white text-lg md:text-xl font-light max-w-xl mx-auto mb-12">Pronto para trazer automação estruturada e segurança absoluta para a sua operação?</p></FadeIn>
-        <FadeIn delay={0.2} className="flex flex-col items-center justify-center"><MagneticButton href="https://wa.me/5522998586180" target="_blank" rel="noreferrer" className="inline-flex items-center gap-4 bg-white text-black px-8 lg:px-10 py-4 lg:py-5 rounded-full hover:bg-white/90 transition-all duration-300 font-semibold tracking-wide uppercase group"><span className="tracking-widest text-xs lg:text-sm">Falar Comigo</span><motion.div animate={{ x: [0, 5, 0], y: [0, -5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowUpRight className="w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-1 group-hover:-translate-y-1" /></motion.div></MagneticButton><div className="flex items-center gap-2 mt-6 text-white text-xs tracking-widest uppercase font-medium"><Lock className="w-4 h-4" /><span>Direct WhatsApp Channel</span></div></FadeIn>
+    <section id="cta" className="relative overflow-hidden border-t border-b border-white/10 bg-[#E8272A]">
+      {/* Typography Composition Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
+        <span className="absolute top-[5%] left-[5%] text-[8rem] md:text-[14rem] font-display font-bold tracking-tighter text-white/[0.06] leading-none">automação</span>
+        <span className="absolute top-[20%] right-[2%] text-[6rem] md:text-[10rem] font-display font-bold tracking-tighter text-black/[0.08] leading-none">precisão</span>
+        <span className="absolute bottom-[30%] left-[10%] text-[5rem] md:text-[9rem] font-display font-bold tracking-tighter text-white/[0.05] leading-none">escala</span>
+        <span className="absolute bottom-[8%] right-[5%] text-[7rem] md:text-[12rem] font-display font-bold tracking-tighter text-black/[0.07] leading-none">zero</span>
+        <span className="absolute top-[50%] left-[40%] text-[4rem] md:text-[7rem] font-display font-bold tracking-tighter text-white/[0.04] leading-none -rotate-6">alucinações</span>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 relative z-10 w-full flex flex-col items-center text-center">
+        <FadeIn><h2 className="text-4xl md:text-7xl font-medium font-display tracking-tighter leading-[1.05] text-white mb-6">Eleve o pulso<br/><span className="text-black">tecnológico.</span></h2></FadeIn>
+        <FadeIn delay={0.1}><p className="text-white/90 text-lg md:text-xl font-light max-w-xl mx-auto mb-12">Pronto para trazer automação estruturada e segurança absoluta para a sua operação?</p></FadeIn>
+        <FadeIn delay={0.2} className="flex flex-col items-center justify-center">
+          <MagneticButton href="https://wa.me/5522998586180" target="_blank" rel="noreferrer" className="inline-flex items-center gap-4 bg-white text-black px-8 lg:px-10 py-4 lg:py-5 rounded-none hover:bg-black hover:text-white transition-all duration-300 font-semibold tracking-wide uppercase group border border-white/20">
+            <span className="tracking-widest text-xs lg:text-sm">FALAR COMIGO</span>
+            <motion.div animate={{ x: [0, 5, 0], y: [0, -5, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}><ArrowUpRight className="w-4 h-4 lg:w-5 lg:h-5" /></motion.div>
+          </MagneticButton>
+          <div className="flex items-center gap-2 mt-6 text-white/70 text-xs tracking-widest uppercase font-medium"><Lock className="w-4 h-4" /><span>Direct · WhatsApp Channel</span></div>
+        </FadeIn>
       </div>
     </section>
   );
