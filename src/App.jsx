@@ -7,25 +7,32 @@ import {
   Cpu, Lock, Star, Activity, Check
 } from 'lucide-react';
 
-const Logo = ({ className = "" }) => (
-  <svg 
-    viewBox="0 0 460 130" 
-    className={className} 
-    xmlns="http://www.w3.org/2000/svg"
-    style={{ height: '1em', width: 'auto', display: 'inline-block' }}
-  >
-    {/* NA - branco */}
-    <text x="8" y="105" fill="#ffffff" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">NA</text>
-    {/* VE - vermelho */}
-    <text x="138" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">VE</text>
-    {/* dotless i - vermelho */}
-    <text x="255" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">ı</text>
-    {/* A - vermelho */}
-    <text x="310" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">A</text>
-    {/* Ponto achatado do i */}
-    <rect x="265" y="19" width="23" height="21" rx="2.5" fill="#E8272A" transform="skewX(-9)" />
-  </svg>
-);
+const Logo = ({ className = "", size = 40 }) => {
+  const w = size * (460 / 130);
+  return (
+    <svg 
+      viewBox="0 0 460 130" 
+      className={className} 
+      xmlns="http://www.w3.org/2000/svg"
+      width={w}
+      height={size}
+      style={{ display: 'inline-block', verticalAlign: 'middle' }}
+      role="img"
+      aria-label="NA VEıA"
+    >
+      {/* NA - branco */}
+      <text x="8" y="105" fill="#ffffff" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">NA</text>
+      {/* VE - vermelho */}
+      <text x="138" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">VE</text>
+      {/* dotless i - vermelho */}
+      <text x="255" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">ı</text>
+      {/* A - vermelho */}
+      <text x="310" y="105" fill="#E8272A" fontFamily="Montserrat, sans-serif" fontSize="118" fontWeight="900" fontStyle="italic" letterSpacing="-0.055em">A</text>
+      {/* Ponto achatado do i */}
+      <rect x="265" y="19" width="23" height="21" rx="2.5" fill="#E8272A" transform="skewX(-9)" />
+    </svg>
+  );
+};
 
 const CyberpunkFilters = () => (
   <svg className="hidden">
@@ -66,7 +73,7 @@ function WebGLVortexAnel() {
     const fs = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fs, fsSrc); gl.compileShader(fs); gl.attachShader(program, fs);
     gl.linkProgram(program); gl.useProgram(program);
 
-    const N = 12000;
+    const N = 4000;
     const positions = new Float32Array(N * 3); const sizes = new Float32Array(N); const colors = new Float32Array(N * 4);
     const angles = new Float32Array(N); const offsets = new Float32Array(N); const speeds = new Float32Array(N);
     const torusR = 0.65, tubeR = 0.22;
@@ -283,7 +290,7 @@ function Preloader() {
   return (
     <div className="fixed inset-0 z-[100] flex w-full h-full overflow-hidden pointer-events-none">
       <div className={`absolute inset-0 flex items-center justify-center z-50 transition-opacity duration-300 ${isOpen ? 'opacity-0' : 'opacity-100'}`}>
-        <Logo className="text-[clamp(90px,18vw,262px)] font-logo text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] select-none" />
+        <Logo size={120} className="font-logo text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] select-none" />
       </div>
       <div className={`relative flex-1 border-r border-[#1a1a1a] bg-[#050507] flex items-center justify-end transition-transform duration-[1200ms] ease-[cubic-bezier(0.7,0,0.3,1)] pointer-events-auto ${isOpen ? '-translate-x-full' : 'translate-x-0'}`}>
         <span className={`text-[clamp(90px,18vw,262px)] font-logo font-black italic tracking-[-0.055em] text-white select-none pr-2 lg:pr-4 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>NA</span>
@@ -375,7 +382,7 @@ function Navbar() {
     <nav className="fixed top-0 inset-x-0 z-50 w-full flex justify-between items-center p-6 lg:px-12 lg:py-8 bg-[#050505]/80 backdrop-blur-md border-b border-white/10">
       <div className="flex-shrink-0 font-logo font-black italic text-2xl tracking-tighter">
         <motion.a href="#" className="text-white flex items-center gap-1" whileHover={{ scale: 1.05 }}>
-          <Logo className="font-logo text-2xl text-white" />
+          <Logo size={28} />
         </motion.a>
       </div>
       <div className="hidden lg:flex gap-8 items-center">
@@ -406,19 +413,31 @@ function Navbar() {
 }
 
 function Hero() {
-  const { scrollY } = useScroll();
-  const yParallax = useTransform(scrollY, [0, 1000], [0, 180]);
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+  const yBg = useTransform(scrollYProgress, [0, 1], ['0%', '40%']);
+  const yContent = useTransform(scrollYProgress, [0, 1], ['0%', '15%']);
+  const opacityContent = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
-    <section id="hero" className="relative min-h-[100svh] flex flex-col justify-center overflow-hidden bg-[#050505] pt-32 pb-20">
-      <div className="absolute inset-0 z-0 bg-cover bg-center bg-fixed" style={{ backgroundImage: `url('https://i.postimg.cc/RZhvNtBL/Hero1.png')`, maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)' }} />
+    <section ref={sectionRef} id="hero" className="relative min-h-[100svh] flex flex-col justify-center overflow-hidden bg-[#050505] pt-32 pb-20">
+      {/* Parallax background image */}
+      <motion.div 
+        className="absolute inset-0 z-0 bg-cover bg-center" 
+        style={{ 
+          backgroundImage: `url('https://i.postimg.cc/RZhvNtBL/Hero1.png')`, 
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)', 
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+          y: yBg 
+        }} 
+      />
       <div className="absolute top-[-10%] right-[-20%] w-[70vw] h-[70vw] glow-red-orbit pointer-events-none z-0" />
       <div className="absolute bottom-[-15%] left-[-15%] w-[60vw] h-[60vw] glow-red-orbit pointer-events-none opacity-70 z-0" />
       
       <HeroParticles />
       <EKGBackground />
       
-      <div className="relative z-10 container mx-auto px-6 max-w-7xl flex flex-col justify-center h-full">
+      <motion.div style={{ y: yContent, opacity: opacityContent }} className="relative z-10 container mx-auto px-6 max-w-7xl flex flex-col justify-center h-full">
         <motion.div className="flex flex-col lg:flex-row gap-12 lg:gap-8 justify-between items-start lg:items-center w-full">
           
           <div className="flex flex-col space-y-6 lg:space-y-8 max-w-2xl">
@@ -446,7 +465,7 @@ function Hero() {
           </div>
 
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -624,8 +643,8 @@ function Footer() {
     <footer className="py-16 px-6 border-t border-white/5 bg-[#050505]">
       <div className="container mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
         <div className="flex items-center gap-4">
-          <Logo className="text-3xl" />
-          <span className="text-lg font-medium text-white tracking-tight">NA VEiA</span>
+          <Logo size={32} />
+          <span className="text-lg font-medium text-white tracking-tight">NA VEıA</span>
         </div>
         <p className="text-sm text-gray-500">© 2025 NA VEiA. Engenharia de Conhecimento com IA Aplicada.</p>
         <div className="flex gap-6">
@@ -659,7 +678,6 @@ export default function App() {
           margin: 0;
           padding: 0;
         }
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Montserrat:ital,wght@0,900;1,900&family=Space+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
         .font-sans { font-family: 'Inter', sans-serif; }
         .font-display { font-family: 'Space Grotesk', sans-serif; }
         .font-logo { font-family: 'Montserrat', sans-serif; }
@@ -680,7 +698,7 @@ export default function App() {
         }
       `}} />
       <div className="min-h-screen font-sans selection:bg-[#E8272A]/30 lg:cursor-none relative">
-        <BackgroundGrid /><EKGBackground /><CustomCursor /><Preloader />
+        <BackgroundGrid /><CustomCursor /><Preloader />
         <motion.div className="fixed top-0 left-0 right-0 h-1 bg-[#E8272A] origin-left z-50" style={{ scaleX }} />
         <Navbar /><Hero /><ProblemSection /><MethodSection /><MentorSection /><DiagnosticSection /><TestimonialsSection /><CTASection /><Footer />
       </div>
