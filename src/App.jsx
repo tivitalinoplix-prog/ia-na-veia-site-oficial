@@ -413,49 +413,47 @@ function Navbar() {
 }
 
 function Hero() {
-  const sectionRef = useRef(null);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
-  const yBg = useTransform(scrollYProgress, [0, 1], ['0%', '40%']);
-  const yContent = useTransform(scrollYProgress, [0, 1], ['0%', '15%']);
-  const opacityContent = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const { scrollY } = useScroll();
 
   return (
-    <section ref={sectionRef} id="hero" className="relative min-h-[100svh] flex flex-col justify-center overflow-hidden bg-[#050505] pt-32 pb-20">
-      {/* Parallax background image */}
-      <motion.div 
-        className="absolute inset-0 z-0 bg-cover bg-center" 
+    <section id="hero" style={{ backgroundColor: '#050505' }} className="relative min-h-[100svh] flex flex-col justify-center overflow-hidden pt-32 pb-20">
+      {/* Background Fixo Parallax - Hero */}
+      <div 
+        className="absolute inset-0 z-0 bg-no-repeat bg-[75%_5%] md:bg-center bg-fixed bg-[length:768px_512px] md:bg-[length:1536px_1024px]" 
         style={{ 
-          backgroundImage: `url('https://i.postimg.cc/RZhvNtBL/Hero1.png')`, 
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)', 
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-          y: yBg 
+          backgroundImage: `url('https://i.postimg.cc/fTr2CQYp/hero_bg.jpg')`, 
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 100%)', 
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 100%)' 
         }} 
       />
+      {/* Overlay super leve na Hero */}
+      <div className="absolute inset-0 z-0 bg-black/10 pointer-events-none" />
+      
       <div className="absolute top-[-10%] right-[-20%] w-[70vw] h-[70vw] glow-red-orbit pointer-events-none z-0" />
       <div className="absolute bottom-[-15%] left-[-15%] w-[60vw] h-[60vw] glow-red-orbit pointer-events-none opacity-70 z-0" />
       
       <HeroParticles />
       <EKGBackground />
       
-      <motion.div style={{ y: yContent, opacity: opacityContent }} className="relative z-10 container mx-auto px-6 max-w-7xl flex flex-col justify-center h-full">
-        <motion.div className="flex flex-col lg:flex-row gap-12 lg:gap-8 justify-between items-start lg:items-center w-full">
+      <div className="relative z-10 container mx-auto px-6 max-w-7xl flex flex-col justify-center h-full">
+        <motion.div className="flex flex-col lg:flex-row gap-12 lg:gap-8 justify-between items-start lg:items-center w-full mt-10 md:mt-0">
           
           <div className="flex flex-col space-y-6 lg:space-y-8 max-w-2xl">
             <div className="w-16 h-px bg-[#E8272A]/50" />
-            <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-medium tracking-tighter leading-[1.05] text-white">
+            <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-display font-medium tracking-tighter leading-[1.05] text-white drop-shadow-xl">
               FUSÃO<br />NEURO + IA<span className="text-[#E8272A]">/</span>
             </h1>
             <div className="space-y-4">
-              <p className="text-lg md:text-xl font-light text-gray-300">
+              <p className="text-lg md:text-xl font-light text-gray-300 drop-shadow-md">
                 Onde processos repetitivos encontram inteligência estruturada.
               </p>
-              <p className="text-base md:text-lg font-light text-gray-400">
+              <p className="text-base md:text-lg font-light text-gray-300 drop-shadow-md">
                 Fusão estratégica entre <span className="text-white font-medium">Neurociência</span>, <span className="text-white font-medium">IA Generativa</span> e <span className="text-white font-medium">Ciência da Criatividade</span>.
               </p>
             </div>
           </div>
 
-          <div className="glass-panel p-6 md:p-8 rounded-3xl w-full sm:w-auto sm:min-w-[320px] shadow-2xl transition-transform hover:scale-[1.02] mt-4 lg:mt-0 border-t border-l border-white/10">
+          <div className="glass-panel p-6 md:p-8 rounded-3xl w-full sm:w-auto sm:min-w-[320px] shadow-2xl transition-transform hover:scale-[1.02] mt-8 lg:mt-0 border-t border-l border-white/10">
             <div className="flex justify-between items-start mb-4 md:mb-6">
               <span className="text-lg md:text-xl font-medium text-white tracking-wide">Precisão Garantida</span>
               <ShieldCheck className="w-6 h-6 md:w-7 md:h-7 text-[#E8272A]" />
@@ -465,6 +463,12 @@ function Hero() {
           </div>
 
         </motion.div>
+      </div>
+      
+      <motion.div className="absolute bottom-10 left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 lg:bottom-16 lg:right-16 z-30">
+        <MagneticButton href="#problem" className="flex items-center justify-center w-20 h-20 md:w-24 md:h-24 border border-white/20 hover:border-[#E8272A] rounded-full transition-all group bg-black/20 backdrop-blur-md shadow-[0_0_30px_rgba(232,39,42,0.15)] hover:shadow-[0_0_50px_rgba(232,39,42,0.4)]">
+          <ArrowDown className="w-8 h-8 md:w-10 md:h-10 text-[#E8272A] group-hover:text-white transition-colors duration-500 group-hover:rotate-90" />
+        </MagneticButton>
       </motion.div>
     </section>
   );
@@ -490,21 +494,41 @@ function ProblemSection() {
     "Custos altos são sintoma de processos ineficientes. A IA aplicada reduz custos operacionais drasticamente.",
     "A estagnação é reversível. Uma intervenção estratégica com IA pode transformar sua operação agora."
   ];
+
   return (
-    <section id="problem" className="relative z-20 w-full border-t border-white/10 bg-[#050505]">
+    <section id="problem" style={{ backgroundColor: '#050505' }} className="relative z-20 w-full border-t border-white/10">
       <div className="grid grid-cols-1 lg:grid-cols-2 w-full">
-        <div className="border-b lg:border-b-0 lg:border-r border-white/10 flex flex-col">
-          <div className="p-8 lg:p-20 border-b border-white/10 bg-[#050505]">
-            <FadeIn><div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111111] border border-white/10 mb-8"><motion.div animate={{ rotate: [0, 15, -15, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}><Bug className="w-4 h-4 text-[#E8272A]" /></motion.div><span className="text-xs font-medium tracking-wide text-white uppercase">Diagnóstico Operacional</span></div></FadeIn>
+        
+        {/* COLUNA ESQUERDA - PARALLAX CONTÍNUO */}
+        <div className="border-b lg:border-b-0 lg:border-r border-white/10 flex flex-col relative overflow-hidden">
+          
+          {/* Background fixo espelhado da Hero (continuidade) */}
+          <div 
+            className="absolute inset-0 z-0 bg-no-repeat bg-[75%_5%] md:bg-center bg-fixed bg-[length:768px_512px] md:bg-[length:1536px_1024px]" 
+            style={{ 
+              backgroundImage: `url('https://i.postimg.cc/fTr2CQYp/hero_bg.jpg')`, 
+              maskImage: 'linear-gradient(to bottom, black 0%, black 85%, transparent 100%)', 
+              WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 85%, transparent 100%)' 
+            }} 
+          />
+
+          {/* OVERLAY ESCURO 1 - Mais escuro que a Hero */}
+          <div className="relative z-10 p-8 lg:p-20 border-b border-white/10 bg-black/70 backdrop-blur-[2px]">
+            <FadeIn><div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111111]/80 border border-white/10 mb-8"><motion.div animate={{ rotate: [0, 15, -15, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}><Bug className="w-4 h-4 text-[#E8272A]" /></motion.div><span className="text-xs font-medium tracking-wide text-white uppercase">Diagnóstico Operacional</span></div></FadeIn>
             <FadeIn delay={0.1}><h2 className="text-4xl lg:text-6xl font-display font-medium tracking-tighter text-white leading-[1.1] max-w-lg mb-6">Sua operação está <span className="text-[#E8272A]">drenando seu crescimento?</span></h2></FadeIn>
             <FadeIn delay={0.2}><p className="text-base lg:text-lg text-white font-light max-w-md leading-relaxed">Sua empresa investe tempo e dinheiro em operações repetitivas. Documentos são redigidos manualmente, processos geram gargalos e a equipe gasta horas em tarefas que poderiam ser automatizadas com IA.</p></FadeIn>
           </div>
-          <div className="flex-1 relative min-h-[300px] overflow-hidden p-8 lg:p-20 flex flex-col justify-end bg-[#111111]">
+
+          {/* OVERLAY ESCURO 2 - Quase preto total antes da próxima secção */}
+          <div className="relative z-10 flex-1 min-h-[300px] overflow-hidden p-8 lg:p-20 flex flex-col justify-end bg-black/85 backdrop-blur-[4px]">
             <motion.div className="absolute top-8 right-8" animate={{ rotate: [0, 5, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}><Quote className="w-16 h-16 text-white" /></motion.div>
-            <FadeIn delay={0.3} direction="right"><div className="relative z-10 border-l-2 border-l-[#E8272A] pl-6 py-2"><p className="text-xl lg:text-2xl text-white font-light leading-snug max-w-md">"O problema não é a sua equipe. O problema é que seus processos não foram desenhados para escalar com inteligência."</p></div></FadeIn>
+            <FadeIn delay={0.3} direction="right"><div className="relative z-10 border-l-2 border-[#E8272A] pl-6 py-2"><p className="text-xl lg:text-2xl text-white font-light leading-snug max-w-md">"O problema não é a sua equipe. O problema é que seus processos não foram desenhados para escalar com inteligência."</p></div></FadeIn>
           </div>
+
         </div>
-        <div className="flex flex-col h-full bg-[#E8272A]">
+
+        {/* COLUNA DIREITA - Interativa vermelha */}
+        <div className="flex flex-col h-full bg-[#E8272A] relative z-10">
           <div className="p-8 lg:p-16 border-b border-white/10 bg-black/10 relative overflow-hidden min-h-[250px] flex flex-col justify-center">
             <AlertTriangle className="w-32 h-32 text-white absolute top-8 right-8 opacity-10" />
             <div className="relative z-10 w-full">
@@ -513,7 +537,7 @@ function ProblemSection() {
           </div>
           <div className="flex flex-col flex-1">
             {stages.map((s, index) => (
-              <FadeIn key={s.id} delay={index * 0.1} direction="left"><motion.div onClick={() => setSelectedStage(index)} whileHover={{ x: 10 }} className={`group relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 lg:px-12 border-b border-white/10 transition-all cursor-pointer gap-4 ${selectedStage === index ? 'bg-black/20 border-l-2 border-l-[#E8272A]' : 'hover:bg-black/10 border-l-2 border-l-transparent'}`}><div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" /><div className="flex items-center gap-6 w-full sm:w-auto relative z-10"><div className={`w-12 h-12 flex items-center justify-center rounded-full border transition-colors ${selectedStage === index ? 'bg-white border-white' : 'bg-transparent border-white/20'}`}><s.icon className={`w-5 h-5 ${selectedStage === index ? 'text-[#E8272A]' : 'text-white'}`} /></div><div><h4 className="text-xl font-medium tracking-tight text-white">{s.title}</h4><p className="text-sm text-white mt-1 max-w-[280px] font-light">{s.desc}</p></div></div><div className="flex items-center justify-between w-full sm:w-auto sm:flex-1 sm:justify-end gap-6 relative z-10">{s.isTerminal && <span className="text-[10px] font-medium text-white tracking-widest uppercase px-3 py-1.5 border border-white/20 bg-white/10 rounded-full">CRÍTICO</span>}<div className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all ${selectedStage === index ? 'bg-white text-[#E8272A]' : 'border-white/20 text-white hover:bg-white/20'}`}><ArrowUpRight className="w-5 h-5" /></div></div></motion.div></FadeIn>
+              <FadeIn key={s.id} delay={index * 0.1} direction="left"><motion.div onClick={() => setSelectedStage(index)} whileHover={{ x: 10 }} className={`group relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 lg:px-12 border-b border-white/10 transition-all cursor-pointer gap-4 ${selectedStage === index ? 'bg-black/20 border-l-2 border-[#E8272A]' : 'hover:bg-black/10 border-l-2 border-transparent'}`}><div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" /><div className="flex items-center gap-6 w-full sm:w-auto relative z-10"><div className={`w-12 h-12 flex items-center justify-center rounded-full border transition-colors ${selectedStage === index ? 'bg-white border-white' : 'bg-transparent border-white/20'}`}><s.icon className={`w-5 h-5 ${selectedStage === index ? 'text-[#E8272A]' : 'text-white'}`} /></div><div><h4 className="text-xl font-medium tracking-tight text-white">{s.title}</h4><p className="text-sm text-white mt-1 max-w-[280px] font-light">{s.desc}</p></div></div><div className="flex items-center justify-between w-full sm:w-auto sm:flex-1 sm:justify-end gap-6 relative z-10">{s.isTerminal && <span className="text-[10px] font-medium text-white tracking-widest uppercase px-3 py-1.5 border border-white/20 bg-white/10 rounded-full">CRÍTICO</span>}<div className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all ${selectedStage === index ? 'bg-white text-[#E8272A]' : 'border-white/20 text-white hover:bg-white/20'}`}><ArrowUpRight className="w-5 h-5" /></div></div></motion.div></FadeIn>
             ))}
           </div>
         </div>
@@ -526,11 +550,11 @@ function MethodSection() {
   return (
     <section id="method" className="relative z-20 w-full border-t border-white/10 bg-[#050505] py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
-        <FadeIn className="mb-16"><span className="font-medium uppercase mb-4 block text-[#E8272A] tracking-widest text-xs flex items-center gap-2"><motion.div animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="w-2 h-2 rounded-full bg-[#E8272A]" />O Framework</span><h2 className="text-4xl lg:text-6xl font-display font-medium tracking-tighter text-white mb-6 leading-[1.1]">O Método <span className="text-white">NA VEiA</span></h2><p className="text-white text-lg max-w-xl leading-relaxed font-light">3 pilares fundamentais. Precisão técnica absoluta para escalar seu negócio com estruturação automatizada e IA.</p></FadeIn>
+        <FadeIn className="mb-16"><span className="font-medium uppercase mb-4 block text-[#E8272A] tracking-widest text-xs flex items-center gap-2"><motion.div animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="w-2 h-2 rounded-full bg-[#E8272A]" />O Framework</span><h2 className="text-4xl lg:text-6xl font-display font-medium tracking-tighter text-white mb-6 leading-[1.1]">O Método <span className="text-white">NA VEıA</span></h2><p className="text-white text-lg max-w-xl leading-relaxed font-light">3 pilares fundamentais. Precisão técnica absoluta para escalar seu negócio com estruturação automatizada e IA.</p></FadeIn>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-auto">
-          <FadeIn delay={0.1} className="md:col-span-2"><TiltCard><div className="group relative bg-[#E8272A] border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row justify-between hover:border-white/30 transition-colors overflow-hidden min-h-[350px] gap-8 rounded-2xl h-full"><div className="relative z-10 flex flex-col justify-between h-full"><div><div className="w-14 h-14 flex items-center justify-center bg-white/10 rounded-full text-white mb-8 border border-white/20 backdrop-blur-sm"><BarChart className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Otimização Inteligente</h3><p className="text-base lg:text-lg text-white leading-relaxed font-light max-w-md">Mapeamento estratégico de gargalos e estruturação de fluxos de trabalho autônomos de back-office.</p></div></div><div className="relative z-10 flex items-center justify-center w-full md:w-auto flex-1 mt-6 md:mt-0 bg-black/20 p-6 rounded-xl border border-white/10"><DiagnosticGrid /></div></div></TiltCard></FadeIn>
-          <FadeIn delay={0.2} className="md:col-span-1"><TiltCard><div className="group relative bg-[#111111] border border-white/10 p-8 lg:p-12 flex flex-col justify-between hover:border-[#FF2D30] transition-colors min-h-[350px] rounded-2xl h-full"><div className="relative z-10 h-full flex flex-col"><div className="w-14 h-14 flex items-center justify-center bg-[#1A1A1A] rounded-full text-[#E8272A] mb-8 border border-white/5"><FileText className="w-6 h-6" /></div><h3 className="text-xl lg:text-2xl font-display font-medium tracking-tight mb-4 text-white">Automação de Docs</h3><p className="text-sm lg:text-base text-white leading-relaxed font-light mb-8">Engenharia de Prompt para redigir documentos técnicos e relatórios em escala.</p><div className="mt-auto w-full border border-white/5 bg-[#050505] p-5 rounded-xl font-tech text-xs leading-relaxed tracking-wider overflow-hidden relative"><div className="flex gap-2 mb-4 opacity-50 border-b border-white/5 pb-3"><div className="w-3 h-3 rounded-full bg-[#E8272A]"></div><div className="w-3 h-3 rounded-full bg-white/20"></div><div className="w-3 h-3 rounded-full bg-white/20"></div></div><div className="space-y-2"><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.2 }}><span className="text-[#E8272A]">function</span> <span className="text-white">generate_doc</span><span className="text-white">() {"{"}</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.6 }} className="pl-4 text-white italic">// Processing LLM return</motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 1.0 }} className="pl-4"><span className="text-[#E8272A]">return</span> <span className="text-white">Success</span><span className="text-white">;</span></motion.p><p><span className="text-white">{"}"}</span><span className="inline-block w-2 h-4 ml-1 align-middle bg-[#E8272A] animate-pulse"></span></p></div></div></div></div></TiltCard></FadeIn>
-          <FadeIn delay={0.3} className="md:col-span-3"><TiltCard><div className="group relative bg-[#0a0a0a] border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between hover:border-[#FF2D30] transition-colors min-h-[300px] rounded-2xl h-full"><div className="relative z-10 max-w-2xl mb-8 md:mb-0"><div className="w-14 h-14 flex items-center justify-center bg-[#111111] rounded-full text-[#E8272A] mb-8 border border-white/5"><Shield className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Auditoria de IA</h3><p className="text-base lg:text-lg text-white leading-relaxed font-light">Segurança absoluta com RLHF e LLM Alignment auditado pelo humano para eliminar alucinações e garantir <strong className="text-white font-medium">100% de Precisão Técnica</strong>. Nossos fluxos revisam a si mesmos.</p></div><div className="relative z-10 w-full md:w-auto flex items-center justify-center gap-8 hidden md:flex shrink-0"><motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="w-32 h-32 rounded-full border border-[#E8272A]/30 flex items-center justify-center bg-[#E8272A]/10 relative"><div className="absolute inset-0 rounded-full border border-[#E8272A]/20 animate-ping opacity-20"></div><Target className="w-12 h-12 text-[#E8272A]" /></motion.div><div className="flex flex-col gap-4"><div className="w-24 h-2 bg-white opacity-30 rounded-full"></div><div className="w-48 h-2 bg-white opacity-30 rounded-full"></div><div className="w-32 h-2 bg-[#E8272A] rounded-full shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div></div></div></div></TiltCard></FadeIn>
+          <FadeIn delay={0.1} className="md:col-span-2"><TiltCard><div className="group relative bg-[#E8272A] border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row justify-between hover:border-white/30 transition-colors overflow-hidden min-h-[350px] gap-8 rounded-none h-full"><div className="relative z-10 flex flex-col justify-between h-full"><div><div className="w-14 h-14 flex items-center justify-center bg-white/10 rounded-none text-white mb-8 border border-white/20 backdrop-blur-sm"><Cpu className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Ecossistemas SaaS & Antigravity</h3><p className="text-base lg:text-lg text-white leading-relaxed font-light max-w-md">Desenvolvimento Full-Stack de aplicativos B2B sob medida. Utilizamos o framework de engenharia Antigravity para criar infraestruturas digitais de alta performance, garantindo implantação rápida, segura e escalável.</p></div></div><div className="relative z-10 flex items-center justify-center w-full md:w-auto flex-1 mt-6 md:mt-0 bg-black/20 p-6 rounded-none border border-white/10"><DiagnosticGrid /></div></div></TiltCard></FadeIn>
+          <FadeIn delay={0.2} className="md:col-span-1"><TiltCard><div className="group relative bg-[#111111] border border-white/10 p-8 lg:p-12 flex flex-col justify-between hover:border-[#FF2D30] transition-colors min-h-[350px] rounded-none h-full"><div className="relative z-10 h-full flex flex-col"><div className="w-14 h-14 flex items-center justify-center bg-[#1A1A1A] rounded-none text-[#E8272A] mb-8 border border-white/5"><Brain className="w-6 h-6" /></div><h3 className="text-xl lg:text-2xl font-display font-medium tracking-tight mb-4 text-white">Agentes Autônomos (Google AI Workspace)</h3><p className="text-sm lg:text-base text-white leading-relaxed font-light mb-8">Automação de back-office com Agentic AI. Dominamos o workspace laboratorial do Google (Vertex AI/AI Studio) para orquestrar agentes autônomos que operam 24/7 na gestão de contratos, SMS e relatórios offshore.</p><div className="mt-auto w-full border border-white/5 bg-[#050505] p-5 rounded-none font-tech text-xs leading-relaxed tracking-wider overflow-hidden relative"><div className="flex gap-2 mb-4 opacity-50 border-b border-white/5 pb-3"><div className="w-3 h-3 rounded-none bg-[#E8272A]"></div><div className="w-3 h-3 rounded-none bg-white/20"></div><div className="w-3 h-3 rounded-none bg-white/20"></div></div><div className="space-y-2"><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.2, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Initializing Google_AI_Workspace...</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.6, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Connecting Perplexity_API...</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 1.0, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">Antigravity Framework:</span> <span className="text-[#E8272A] font-bold">ACTIVE</span></motion.p><motion.p initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 1.4, ease: "easeInOut" }}><span className="text-white/50">&gt;</span> <span className="text-white">System Status:</span> <span className="text-[#E8272A] font-bold">Zero_Hallucinations</span><span className="inline-block w-2 h-4 ml-1 align-middle bg-[#E8272A] animate-pulse"></span></motion.p></div></div></div></div></TiltCard></FadeIn>
+          <FadeIn delay={0.3} className="md:col-span-3"><TiltCard><div className="group relative bg-[#0A0A0A] border border-white/10 p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between hover:border-[#FF2D30] transition-colors min-h-[300px] rounded-none h-full"><div className="relative z-10 max-w-2xl mb-8 md:mb-0"><div className="w-14 h-14 flex items-center justify-center bg-[#111111] rounded-none text-[#E8272A] mb-8 border border-white/5"><Shield className="w-6 h-6" /></div><h3 className="text-2xl lg:text-4xl font-display font-medium tracking-tight mb-4 text-white">Auditoria & Deep Research (Perplexity)</h3><p className="text-base lg:text-lg text-white leading-relaxed font-light">Mitigação de riscos e Zero Alucinações. Aliamos a precisão da Neurociência ao motor de raciocínio do Perplexity para realizar fact-checking extremo, Red Teaming e validação de dados críticos da sua operação.</p></div><div className="relative z-10 w-full md:w-auto flex items-center justify-center gap-8 hidden md:flex shrink-0"><motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="w-32 h-32 rounded-full border border-[#E8272A]/30 flex items-center justify-center bg-[#E8272A]/10 relative"><div className="absolute inset-0 rounded-full border border-[#E8272A]/20 animate-ping opacity-20"></div><Target className="w-12 h-12 text-[#E8272A]" /></motion.div><div className="flex flex-col gap-4"><div className="w-24 h-2 bg-white opacity-30 rounded-full"></div><div className="w-48 h-2 bg-white opacity-30 rounded-full"></div><div className="w-32 h-2 bg-[#E8272A] rounded-full shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div></div></div></div></TiltCard></FadeIn>
         </div>
       </div>
     </section>
