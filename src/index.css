@@ -1,0 +1,3 @@
+@import "tailwindcss";
+
+/* O App.tsx contém estilos globais na tag <style>, mas podemos manter o index vazio além do tailwind */
